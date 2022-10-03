@@ -5,7 +5,7 @@ using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace wwDotnetBridge
+namespace wwEncryption
 {
     /// <summary>
     /// Class that provides a number of encryption utilities
@@ -52,8 +52,8 @@ namespace wwDotnetBridge
         /// <param name="encryptionKeySalt">Optional key hash salt</param>
         /// <param name="ivKey">Optional IV vector bytes as a string for AES encryption</param>
         /// <returns></returns>
-        public static byte[] EncryptBytes(byte[] inputBytes, string encryptionKey, string provider,
-                      string cipherMode, string encryptionKeyHashAlgorithm, string encryptionKeySalt, string ivKey)
+        public static byte[] EncryptBytes(byte[] inputBytes, string encryptionKey, string provider = null,
+                      string cipherMode = null, string encryptionKeyHashAlgorithm = null, string encryptionKeySalt = null , string ivKey = null )
         {
             if (encryptionKey == null)
                 encryptionKey = EncryptionUtils.EncryptionKey;
@@ -116,7 +116,7 @@ namespace wwDotnetBridge
         /// <param name="encryptionKeySalt">Optional key hash salt</param>
         /// <param name="ivKey">Optional IV vector bytes as a string for AES encryption</param>
         /// <returns></returns>
-        public static byte[] EncryptBytes(string inputString, string encryptionKey, string provider, string cipherMode, string encryptionKeyHashAlgorithm, string encryptionKeySalt, string ivKey)
+        public static byte[] EncryptBytes(string inputString, string encryptionKey, string provider = null, string cipherMode = null, string encryptionKeyHashAlgorithm = null, string encryptionKeySalt = null , string ivKey = null)
         {
             return EncryptBytes(Encoding.UTF8.GetBytes(inputString), encryptionKey, provider, cipherMode, encryptionKeyHashAlgorithm, encryptionKeySalt, ivKey);
         }

@@ -6,9 +6,13 @@ This is the session repository that provides access to:
 
 * [Session White Paper PDF](Documents/Strahl_FoxProDotnet.pdf) ([html](Documents/FoxProDotnet.html))
 * [Session Slides](Documents/Strahl_FoxProDotNet.pptx)
-* (YouTube Session) (not published yet)
+* YouTube Session <small>*(not published yet)*</small>
 * .NET and FoxPro Examples
 
+**Additional Resources** 
+
+* [wwDotnetBridge Documentation](https://webconnection.west-wind.com/docs/_24n1cfw3a.htm)
+* [wwDotnetBridge White Paper](https://west-wind.com/presentations/wwdotnetbridge/wwDotnetBridge.pdf)
 
 ## Session Description
 

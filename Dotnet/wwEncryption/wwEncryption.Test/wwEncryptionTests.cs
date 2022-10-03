@@ -1,5 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using wwDotnetBridge;
+using wwEncryption;
 
 namespace wwEncryption.Test
 {
@@ -13,7 +13,7 @@ namespace wwEncryption.Test
         {
             string origValue = "SuperSeekrit#9";
 
-            string encoded = EncryptionUtils.EncryptString(origValue, encKey);
+            string encoded = EncryptionUtils.EncryptString(origValue, encKey,);
 
             Assert.IsNotNull(encoded);
 

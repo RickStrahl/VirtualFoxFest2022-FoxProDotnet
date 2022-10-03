@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "wwEncryption": {
+      "commandName": "Project"
+    },
+    "wwEncryption Debug": {
+      "commandName": "Executable",
+      "executablePath": "c:\\programs\\vfp9\\vfp9.exe",
+      "workingDirectory": "C:\\wwapps\\Conf\\FoxProDotNet\\FoxPro"
+    }
+  }
+}
