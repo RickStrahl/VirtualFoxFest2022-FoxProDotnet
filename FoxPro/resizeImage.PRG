@@ -9,11 +9,9 @@
 ***  * Explicitly Invoke methods
 CLEAR
 
-SET STEP ON 
-
 
 *** Only for demo
-SET PROCEDURE TO wwUtils ADDITIVE
+SET PROCEDURE TO Utils ADDITIVE
 
 do wwDotNetBridge
 LOCAL loBridge as wwDotNetBridge

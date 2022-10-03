@@ -35,7 +35,7 @@ lnCount = loBridge.GetProperty(laCertificates,"Count")
 FOR lnX = 1 TO lnCount -1
 	*** Access collection item indirectly
 	LOCAL loCertificate as System.Security.Cryptography.X509Certificates.X509Certificate2	
-	loCertificate = loBridge.GetPropertyEx(loStore,"Certificates[" + TRANSFORM(lnX) + "]")
+	loCertificate = loBridge.GetProperty(loStore,"Certificates[" + TRANSFORM(lnX) + "]")
 	
 	IF !ISNULL(loCertificate)
 		? loCertificate.FriendlyName

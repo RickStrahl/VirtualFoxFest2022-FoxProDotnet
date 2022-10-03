@@ -4,7 +4,7 @@
 
 This is the session repository that provides access to:
 
-* [Session White Paper PDF](Documents/Strahl_FoxProDotnet.pdf) ([html](Documents/FoxProDotnet.html))
+* [Session White Paper PDF](Documents/Strahl_FoxProDotnet.pdf) ([html](Documents/Markdown/FoxProDotnet.md))
 * [Session Slides](Documents/Strahl_FoxProDotNet.pptx)
 * YouTube Session <small>*(not published yet)*</small>
 * .NET and FoxPro Examples
