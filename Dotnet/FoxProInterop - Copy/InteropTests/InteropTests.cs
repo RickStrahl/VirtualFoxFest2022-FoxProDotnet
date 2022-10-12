@@ -8,7 +8,7 @@ namespace InteropTests
     public class InteropTests
     {
         [TestMethod]
-        public void TestMethod1()
+        public void HelloWorldTest()
         {
             var inst = new Interop();
             var result = inst.HelloWorld("ricsk");
@@ -17,5 +17,7 @@ namespace InteropTests
             Console.WriteLine(result);
             Assert.IsTrue(result.Contains("rick"), "Doesn't match name passed in.");
         }
+
+
     }
 }

@@ -1789,7 +1789,7 @@ FUNCTION ShowHTML
 ************************************************************************
 LPARAMETERS lcHTML, lcFile, loWebBrowser
 
-lcHTML=IIF(EMPTY(lcHTML),"",lcHTML)
+lcHTML=IIF(EMPTY(lcHTML) OR ISNULL(lcHtml),"",lcHTML)
 lcFile=IIF(EMPTY(lcFile),SYS(2023)+"\ww_HTMLView.htm",lcFile)
 
 STRTOFILE(STRCONV(lcHTML,9),lcFile)

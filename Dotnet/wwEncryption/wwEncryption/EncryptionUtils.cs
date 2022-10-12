@@ -15,6 +15,8 @@ namespace wwEncryption
         /// <summary>
         /// Replace this value with some unique key of your own
         /// Best set this in your App start up in a Static constructor
+        ///
+        /// For TripleDES this key has to be a multiple of 8 chars long
         /// </summary>
         public static string EncryptionKey = "4a3f131c";
 
@@ -41,6 +43,35 @@ namespace wwEncryption
         #region Two-way Encryption
 
         /// <summary>
+        /// Encrypts a string using Triple DES encryption with a two way encryption key.String is returned as Base64 encoded value
+        /// rather than binary.
+        /// </summary>
+        /// <param name="inputString"></param>
+        /// <param name="encryptionKey"></param>
+        /// <param name="useBinHex">BinHex rather than base64 if true</param>
+        /// <param name="provider">TripleDES, AES</param>
+        /// <param name="cipherMode">ECB, CBC, CTS, OFB</param>
+        /// <param name="encryptionKeyHashAlgorithm">Optional key hash algorithm. Null or empty for none</param>
+        /// <param name="encryptionKeySalt">Optional key hash salt</param>
+        /// <param name="ivKey">Optional IV vector bytes as string for AES encryption</param>
+        /// <returns></returns>
+        public static string EncryptString(string inputString, string encryptionKey,
+                                           bool useBinHex = false,
+                                           string provider = null, string cipherMode = null,
+                                           string encryptionKeyHashAlgorithm = null,
+                                           string encryptionKeySalt = null, string ivKey = null)
+        {
+            if (useBinHex)
+                return BinaryToBinHex(EncryptBytes(Encoding.UTF8.GetBytes(inputString),
+                    encryptionKey, provider, cipherMode, encryptionKeyHashAlgorithm,
+                    encryptionKeySalt, ivKey));
+
+            return Convert.ToBase64String(EncryptBytes(Encoding.UTF8.GetBytes(inputString),
+                    encryptionKey, provider, cipherMode,
+                    encryptionKeyHashAlgorithm, encryptionKeySalt, ivKey));
+        }
+
+        /// <summary>
         /// Encodes a stream of bytes using DES encryption with a pass key. Lowest level method that 
         /// handles all work.
         /// </summary>
@@ -53,7 +84,8 @@ namespace wwEncryption
         /// <param name="ivKey">Optional IV vector bytes as a string for AES encryption</param>
         /// <returns></returns>
         public static byte[] EncryptBytes(byte[] inputBytes, string encryptionKey, string provider = null,
-                      string cipherMode = null, string encryptionKeyHashAlgorithm = null, string encryptionKeySalt = null , string ivKey = null )
+                      string cipherMode = null, string encryptionKeyHashAlgorithm = null,
+                      string encryptionKeySalt = null, string ivKey = null)
         {
             if (encryptionKey == null)
                 encryptionKey = EncryptionUtils.EncryptionKey;
@@ -116,30 +148,11 @@ namespace wwEncryption
         /// <param name="encryptionKeySalt">Optional key hash salt</param>
         /// <param name="ivKey">Optional IV vector bytes as a string for AES encryption</param>
         /// <returns></returns>
-        public static byte[] EncryptBytes(string inputString, string encryptionKey, string provider = null, string cipherMode = null, string encryptionKeyHashAlgorithm = null, string encryptionKeySalt = null , string ivKey = null)
+        public static byte[] EncryptBytes(string inputString, string encryptionKey, string provider = null, string cipherMode = null, string encryptionKeyHashAlgorithm = null, string encryptionKeySalt = null, string ivKey = null)
         {
-            return EncryptBytes(Encoding.UTF8.GetBytes(inputString), encryptionKey, provider, cipherMode, encryptionKeyHashAlgorithm, encryptionKeySalt, ivKey);
-        }
-
-        /// <summary>
-        /// Encrypts a string using Triple DES encryption with a two way encryption key.String is returned as Base64 encoded value
-        /// rather than binary.
-        /// </summary>
-        /// <param name="inputString"></param>
-        /// <param name="encryptionKey"></param>
-        /// <param name="useBinHex">BinHex rather than base64 if true</param>
-        /// <param name="provider">TripleDES, AES</param>
-        /// <param name="cipherMode">ECB, CBC, CTS, OFB</param>
-        /// <param name="encryptionKeyHashAlgorithm">Optional key hash algorithm. Null or empty for none</param>
-        /// <param name="encryptionKeySalt">Optional key hash salt</param>
-        /// <param name="ivKey">Optional IV vector bytes as string for AES encryption</param>
-        /// <returns></returns>
-        public static string EncryptString(string inputString, string encryptionKey, bool useBinHex, string provider, string cipherMode, string encryptionKeyHashAlgorithm, string encryptionKeySalt, string ivKey)
-        {
-            if (useBinHex)
-                return BinaryToBinHex(EncryptBytes(Encoding.UTF8.GetBytes(inputString), encryptionKey, provider, cipherMode, encryptionKeyHashAlgorithm, encryptionKeySalt, ivKey));
-
-            return Convert.ToBase64String(EncryptBytes(Encoding.UTF8.GetBytes(inputString), encryptionKey, provider, cipherMode, encryptionKeyHashAlgorithm, encryptionKeySalt, ivKey));
+            return EncryptBytes(Encoding.UTF8.GetBytes(inputString), encryptionKey, provider,
+                                cipherMode, encryptionKeyHashAlgorithm,
+                                encryptionKeySalt, ivKey);
         }
 
 
@@ -154,7 +167,9 @@ namespace wwEncryption
         /// <param name="encryptionKeySalt">Optional key hash salt</param>
         /// <param name="ivKey">Optional IV vector bytes as a string for AES encryption</param>
         /// <returns></returns>
-        public static byte[] DecryptBytes(byte[] decryptBuffer, string encryptionKey, string provider, string cipherMode, string encryptionKeyHashAlgorithm, string encryptionKeySalt, string ivKey)
+        public static byte[] DecryptBytes(byte[] decryptBuffer, string encryptionKey, string provider,
+                            string cipherMode = null, string encryptionKeyHashAlgorithm = null,
+                            string encryptionKeySalt = null, string ivKey = null)
         {
             if (decryptBuffer == null || decryptBuffer.Length == 0)
                 return null;
@@ -206,12 +221,19 @@ namespace wwEncryption
             return transform.TransformFinalBlock(decryptBuffer, 0, decryptBuffer.Length);
         }
 
-        public static byte[] DecryptBytes(string decryptString, bool useBinHex, string encryptionKey, string provider, string cipherMode, string encryptionKeyHashAlgorithm, string encryptionKeySalt, string ivKey)
+        public static byte[] DecryptBytes(string decryptString, bool useBinHex = false, string encryptionKey = null,
+                                        string provider = null, string cipherMode = null,
+                                        string encryptionKeyHashAlgorithm = null, string encryptionKeySalt = null,
+                                        string ivKey = null)
         {
             if (useBinHex)
-                return DecryptBytes(BinHexToBinary(decryptString), encryptionKey, provider, cipherMode, encryptionKeyHashAlgorithm, encryptionKeySalt, ivKey);
+                return DecryptBytes(BinHexToBinary(decryptString), encryptionKey, provider,
+                    cipherMode, encryptionKeyHashAlgorithm,
+                    encryptionKeySalt, ivKey);
 
-            return DecryptBytes(Convert.FromBase64String(decryptString), encryptionKey, provider, cipherMode, encryptionKeyHashAlgorithm, encryptionKeySalt, ivKey);
+            return DecryptBytes(Convert.FromBase64String(decryptString), encryptionKey,
+                provider, cipherMode, encryptionKeyHashAlgorithm,
+                encryptionKeySalt, ivKey);
         }
 
         /// <summary>
@@ -227,7 +249,7 @@ namespace wwEncryption
         /// <param name="encryptionKeyHashAlgorithm">Optional key hash algorith. Null or empty for none</param>
         /// <param name="encryptionKeySalt">Optional key hash salt</param>
         /// <returns>String</returns>
-        public static string DecryptString(string decryptString, string encryptionKey, bool useBinHex, string provider, string cipherMode, string encryptionKeyHashAlgorithm, string encryptionKeySalt, string ivKey)
+        public static string DecryptString(string decryptString, string encryptionKey, bool useBinHex = false, string provider = null, string cipherMode = null, string encryptionKeyHashAlgorithm = null, string encryptionKeySalt = null, string ivKey = null)
         {
             try
             {
@@ -273,7 +295,7 @@ namespace wwEncryption
         /// </returns>
         public static string ComputeHash(string plainText,
             string hashAlgorithm,
-            string salt)
+            string salt = "")
         {
             byte[] saltBytes;
             if (string.IsNullOrEmpty(salt))
@@ -309,7 +331,7 @@ namespace wwEncryption
         /// </returns>
         public static string ComputeHash(string plainText,
                                          string hashAlgorithm,
-                                         byte[] saltBytes)
+                                         byte[] saltBytes = null)
         {
             if (string.IsNullOrEmpty(plainText))
                 return plainText;
@@ -325,7 +347,7 @@ namespace wwEncryption
 
         public static byte[] ComputeHashBytes(string plainText,
             string hashAlgorithm,
-            byte[] saltBytes)
+            byte[] saltBytes = null)
         {
             if (string.IsNullOrEmpty(plainText))
                 return null;
@@ -518,7 +540,7 @@ namespace wwEncryption
         /// <param name="fileData"></param>
         /// <param name="mode">SHA256,MD5</param>
         /// <returns></returns>
-        public static string GetChecksumFromBytes(byte[] fileData, string mode)
+        public static string GetChecksumFromBytes(byte[] fileData, string mode = "SHA256")
         {
             using (MemoryStream stream = new MemoryStream(fileData))
             {

@@ -1,4 +1,7 @@
 SET PATH TO ".\bin" ADDITIVE
+SET PATH TO "\webconnection\fox\classes" ADDITIVE
+SET PATH TO "\webconnection\fox" ADDITIVE
+
 SET CONFIRM OFF
 SET DEBUG ON
 SET DEVELOPMENT ON

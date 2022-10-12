@@ -2030,3 +2030,44 @@ ENDFUNC
 
 ENDDEFINE
 *EOC wwDotnetCoreBridge 
+
+
+************************************************************************
+*  GetwwDotnetCoreBridge
+****************************************
+***  Function: Factory class to feed a reusable and stored instance
+***            of the wwDotNetCoreBridge class. 
+***    Assume: Depends on wwutils.prg
+***      Pass:
+***    Return: 
+************************************************************************
+FUNCTION GetwwDotNetCoreBridge(lcVersion)
+IF VARTYPE(__DOTNETCOREBRIDGE) != "O"
+   IF EMPTY(lcVersion)       
+		lcVersion = ""
+   ENDIF
+
+   PUBLIC __DOTNETCOREBRIDGE
+   __DOTNETCOREBRIDGE = CREATEOBJECT("wwDotNetCoreBridge",lcVersion)
+   IF VARTYPE(__DOTNETCOREBRIDGE) # "O"
+      RETURN NULL
+   ENDIF
+ENDIF
+RETURN __DOTNETCOREBRIDGE
+ENDFUNC
+
+************************************************************************
+*  InitializeDotnetCoreVersion()
+****************************************
+***  Function: Explicit method that simply creates a wwDotnetCoreBridge
+***            instance. Call this method at the beginning of your
+***            app to force the .NET Runtime version that will be
+***            used throughout the entire application.
+***    Assume: Call this method in your application startup
+***      Pass: Optional: "5.0.1" or "<runtime path>"
+***    Return: wwDotnetCoreBridge instance 
+***            (you don't have to do anything with it)
+************************************************************************
+FUNCTION InitializeDotnetCoreVersion(lcVersion)
+RETURN GetwwDotnetCoreBridge(lcVersion)
+ENDFUNC

@@ -19,7 +19,7 @@ lcSecret = "seekrit10!"
 lcSecretSalt = "#@Sek|+!223"
 
 ? "Encryption with explicit key:"
-lcOriginal = "A very approachable Test String with upper ASCII chars: ƒ¢ªÑº!"
+lcOriginal = "A very approachable string with upper ASCII chars: ƒ¢ªÑº!"
 lcOriginal2 = "Saksdj asdklajs dlaksjd aslkdj alksdjalkd jalskdj asdjasld kalksdjlaksjdkljasd"
 
 ? lcOriginal
@@ -149,6 +149,8 @@ FUNCTION EncryptString(lcInput, lcEncryptionKey, llUseBinHex, ;
                        lcIvKey)
 LOCAL lcError, lcResult
 
+SET STEP ON 
+
 IF EMPTY(lcEncryptionKey)
   lcEncryptionKey = null
 ENDIF  
@@ -201,6 +203,12 @@ ENDFUNC
 ***            encryption key that was used to encrypt the string.
 ***      Pass: lcEncryptedText  -  Encrypted text
 ***            lcEncryptionKey  -  Same key that was used to encrypt
+***            llUseBinHex     - opt. BinHex encoding of binary, otherwise Base64
+***            lcProvider      - opt. TripleDES*, AES 
+***            lcCipherMode    - opt. ECB*, CBC, CTS, OFB
+***            lcHashAlgo      - opt. hash algorith for for key hash (using HASH names)
+***            lcEncryptipKeyHashSalt - opt. Key Salt 
+***            lcIvKey         - opt. Iv Key for AES
 ***    Return:
 ************************************************************************
 FUNCTION DecryptString(lcEncryptedText, lcEncryptionKey, llUseBinHex,;

@@ -24,7 +24,7 @@ loStore.Open(leReadOnly) &&leReadOnly)
 *** Alternately you can use the enum value if known
 *loStore.Open(0) &&leReadOnly)
 
-*** Collection of Certificates
+*** Collection of Certificates (custom collection not an array, not normal collection)
 laCertificates = loStore.Certificates
 
 *** Collections don't work over regular COM Interop
@@ -32,9 +32,9 @@ laCertificates = loStore.Certificates
 lnCount = loBridge.GetProperty(laCertificates,"Count")
 
 *** Loop through Certificates
-FOR lnX = 1 TO lnCount -1
-	*** Access collection item indirectly
-	LOCAL loCertificate as System.Security.Cryptography.X509Certificates.X509Certificate2	
+FOR lnX = 0 TO lnCount -1
+	
+	*** Access collection item indirectly	
 	loCertificate = loBridge.GetProperty(loStore,"Certificates[" + TRANSFORM(lnX) + "]")
 	
 	IF !ISNULL(loCertificate)
