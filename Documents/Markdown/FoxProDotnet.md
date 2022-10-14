@@ -119,10 +119,8 @@ In summary .NET Core is:
 * Requires one or more Runtimes to be installed
 * Has many Runtime Versions that may be incompatible with each other
 
-
-
 ### .NET Core requires Runtime Installations
-For FoxPro developers that want to integrate .NET into their FoxPro Windows applications the biggest drawback to .NET Core is the requirement for .NET Core Runtimes
+For FoxPro developers that want to integrate .NET into their FoxPro Windows applications, the biggest drawback to .NET Core is the requirement for .NET Core Runtimes
 
 **For .NET Core you have to ensure that the correct .NET Core Runtime is installed** on the machine. The runtime installs are not small either and there are potential compatibility issues between major versions of these runtimes which are updating once a year on a schedule. This is less an issue for components that you would create for FoxPro, which can work more easily with mismatched .NET Core versions, but full applications have to carefully track what runtime version is targeted to ensure they can run.
 
