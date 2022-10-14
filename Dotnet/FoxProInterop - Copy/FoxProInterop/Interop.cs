@@ -22,13 +22,6 @@ namespace FoxProInterop
 
         public decimal Add(decimal number1, decimal number2)
         {
-
-            var store = new X509Store();
-            foreach (var cert in store.Certificates)
-            {
-                Console.WriteLine(cert.IssuerName);
-            }
-
             return number1 + number2;
         }
 

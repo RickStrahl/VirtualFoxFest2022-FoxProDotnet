@@ -357,7 +357,7 @@ Using Visual Studio is considerably easier since it's a guided experience, but I
 
 I'll then transition into Visual Studio to show how you can use more advanced tooling features to do things like debugging and take advantage of the much more complete IntelliSense support in Visual Studio over the basics that you get in a pure editor like VS Code.
 
-### The raw SDK lets build, test, run and debug .NET Applications
+### The raw SDK lets you build, test, run and debug .NET Applications
 Using the new .NET SDK tools you can now create .NET components without requiring a big development environment. You can use the command line tools - or a light weight editor like Visual Studio Code - that supports the generic OmniSharp .NET Build tools to build .NET components or applications.
 
 If you're building small, single focus components or a small front end interface to a library that's more easily callable from FoxPro, using the command line tools is all you might need. If you can follow instructions and cut and paste some basic code and XML project templates you can do all of this quite easily using nothing more than the .NET SDK, the command line tooling and any editor of your choice.
@@ -612,7 +612,25 @@ In order to rebuild the project, you'll have to quit FoxPro or your application,
 
 > There's cheat for this behavior, if you use the latest version of Visual Studio, which has support for Hot Reload. This feature allows you to make many changes in .NET code **and continue running the host process**, while code is replaced in the running application. Surprisingly Hot Reload works even when running a .NET component from Visual FoxPro in the Visual Studio Debugger. More on this later.
 
+#### Compilation Errors
+While we're at let's also talk about compilation errors. Before you can run an application or create output for component you have to have an error free compilation.
+
+.NET is a compiled language so it checks for syntax errors, type mis-assignments, missing values for parameters etc., all **at compile time**. You'll find that compile time error checking easily catches 90% of errors that you're likely to make when writing code.
+
+When your code does have errors you can see the compiler output as part of the `dotnet build` command. Here's what this looks like in the terminal in VSCode:
+
+![](CommandLineCompileError.png)
+
+It gives you an explanation and a line/col number for the code which you can use to catch the error.
+
+The editor also does real-time background compilation of the code you're editing and shows you errors as you are writing your code in the editor, highlighting errors with red squiggles hover pop overs for more information about the error:
+
+![](editorErrorHighlighting.png)
+
+This feature comes courtesy of the Omnisharp C# language server, which is a generic component that is used by several editors to provide C# language support. Bigger IDEs like Visual Studio and Rider use different engines that are more sophisticated, but the OmniSharp integration in VS Code is pretty useful and provides many features like error display, basic code navigation and some basic refactorings which is great if you want to stick to a light weight editor solution like VS Code.
+
 ### Adding more Functionality
+Alright back to our code. Assuming you've fixed your code lets add some more functionality.
 
 #### Adding Simple Methods
 Let's add a couple of more methods to the `Interop` class that perform some simple math. 
@@ -1023,11 +1041,874 @@ To call this from FoxPro is pretty much identical than before just with a differ
 lcHtml = loBridge.InvokeStaticMethod("FoxProInterop.Markdown", "ToHtml", lcMarkdown)
 ```
 
-Alright, I think you get the idea. Although all of these examples are very simple, they give you a pretty good idea of quite a few of the things that you can quite easily do with .NET **with very little effort**. Calling this code from FoxPro can be very easy to do.
+Alright, I think you get the idea - static methods are one of the simplest way to expose functionality in .NET and call it from FoxPro as you don't need to instantiate a type first and you can pass one or more parameters into these methods.
 
+> Just as an aside when creating methods in .NET: Don't create methods with huge parameter lists because that gets unwieldy when calling from FoxPro especially if you need to use `InvokeMethod()`. Rather opt for creating **parameter objects** that are specifically designed to have properties for the settings required for the method to run. This makes it easier to set many values in a more predictable way and also allows for creating default values.
+
+Although all of these examples are very simple, they give you a pretty good idea of quite a few of the things that you can quite easily do with .NET **with very little effort**. Calling this code from FoxPro can be very easy to do.
+
+## Writing Code: IntelliSense, Errors,  Debugging and Type Discovery
+
+### IntelliSense
+One of the nice features of .NET is that it has rich type inference support, meaning that it can provide deep insight into classes, interfaces, methods and properties as you are writing your code, providing rich IntelliSense.
+
+This is one of the main reasons why you want to use .NET rather than FoxPro code to write even slightly complex code, because it's much easier to figure out what is available then trying to guess in FoxPro code, or even use a type discovery tool that is static. The fact that you can simply start writing code and use IntelliSense to figure out what's available is very powerful.
+
+Full featured IDEs like Visual Studio and Rider had this functionality forever, but now with the generic Omnisharp Language service that can and has been plugged into many editors you can now also get this functionality in a simpler editor like VS Code.
+
+
+
+
+### Compilation Error Display 
+We briefly touched on error display earlier: .NET is a compiled language system, which means code has to be compiled and checked for validity before it can be run. Compilation is pretty painless these days even if you use low level tools and the command line as you can just use:
+
+```cs
+dotnet build -c Release
+```
+
+to compile your .NET component. If there are errors the compiler displays the errors in red in the compiler output of the command:
+
+![](CommandLineCompileError.png)
+
+From there you can find the line number of the error and start fixing your code. 
+
+The compiler also runs in the background in VS Code, Visual Studio, Rider and other tools and shows you errors right as you type and highlights errors with Red Squiggles:
+
+![](editorErrorHighlighting.png)
+
+You can hover over the error and see more information.
+
+Error detection at compile time is very useful as it makes sure at minimum that your code is semantically correct. It also helps if you are making changes to code, or are refactoring in ensuring that code that may be indirectly affected and breaks, breaks at compile time rather than at runtime.
+
+### Editor Refactoring, Code Hints and More for Code Discovery
+The rest of the topics in this section deal with Code discovery in some form
+
+Even VS Code which is about as low level as you can get for C# language support, features a number of editor tools to help with common tasks. It provides code hints for possible code improvements, suggestions for incomplete code, and options to Refactor code for you for many things. VS Code's support for these things is fairly minimal, and if you use a full IDE like Visual Studio or Rider you get many more built-in Refactorings and Code hints that help with code. But again, for minimal code support even these base features are pretty nice in VS Code.
+
+![](CodeHintsVsCode.png)
+
+This useful hint lets you turn a C# string + expression value into a single interpolated string (`$". Time is: {name}"` instead of `"Time is: " + name`) which is a common refactoring.
+
+The context menu also has a number of options and shortcut keys:
+
+![](CodeContextMenu.png)
+
+One particular useful one is the **Go to Definition** (`F12`) code navigation that lets you jump to the defining method, class or property to see how the code works. Also there's **Peek Definition** (`Alt-F12`) which is similar but displays the Definition code inline in read only mode:
+
+![](PeekDefinition.png)
+
+## Visual Studio
+So far we've stuck with the simple VS Code editor which is a fast and flexible code editor. It works pretty well for what we've been doing so far and if all you are doing is to build a small component with a few methods to be called from FoxPro VS Code is probably all you need.
+
+However, if you are planning on writing a lot of .NET code, and doing a lot of debugging, I think you will find it useful to use a full IDE like Visual Studio or Rider, even if it means installing behemoth of an application.
   
-## Resources
+Visual Studio Community Edition is free and includes all of the features that you need.
 
+* [Visual Studio Community Edition](https://visualstudio.microsoft.com/vs/community/)
+
+Debugging of .NET code in particular is something **that is not easily done without an IDE like Visual Studio or Rider**. But Visual Studio and Rider also provide many more helpful code tools for Refactorings, Code Completions, IntelliCode (AI code completion which is surprisingly good!), enhanced code navigation, advanced tool windows to track and rearrange class code, show associations and much more. For serious developers that do a lot of .NET work, it's well worth to use a full IDE.
+
+As to Visual Studio it's not quite the behemoth it used to be. These days it has a Web based installer that's somewhat streamlined and lets you pick just the workloads that you want to install instead of the entire kitchen sink:
+
+![](VisualStudioInstaller.png)
+
+Once you've installed Visual Studio and installed the .NET workload, you can open the existing projects we've created there and take advantage of the additional features of the IDE.
+
+I'll use Visual Studio for the following discussion. 
+
+### Opening a Project in Visual Studio
+So lets do this. We'll start by opening our project in Visual Studio.
+
+* In Explorer find the `.csproj` file
+* Right click and Use  Open With... and Visual Studio
+
+![](ProjectInVisualStudio.png)
+
+
+> #### Visual Studio Solutions
+> Note that Visual Studio works with a **Solution** which is top level container for one or more projects. So a `.sln` file can references multiple `.csproj` (or other) Projects. Once you've opened the project, Visual Studio wants to save a Solution file (ie. `FoxInterop.sln`) so do that when asked. You can name it the same as your main project and store at the project root. Typically you'll launch your project via the Solution file.
+>
+> Solutions tie together multiple projects that go together, for example a component and a related Test project, or a Web application, its business object library and test projects.
+
+Once the project is loaded, you can **Build** the project in Visual Studio using the Build menu, context shortcut, or the default `Ctrl-Shift-B` command which builds all projects in the Solution. This builds the project and shows the build result  on the status bar, or - if errors occur as shown -  shows an error list in the **Errors Tool Window** on the bottom. If you have errors you can click the, and VS navigates to the offending line in the code.
+
+Most of this is simply a nicer user interface - you can do these tasks in VS Code as well, but here the UI lets you click a button or use a hotkey, rather than using an explicit command line command - which BTW you can still do even if you are using Visual Studio.
+
+### Debugging your .NET Project from FoxPro
+So far, so convenient; UI features are nice, but not essential. 
+
+But the **key feature of Visual Studio for FoxPro .NET Interop is debugging** because there's really no other easy way to do runtime debugging of .NET components. 
+
+You may be able to get away without debugging for your .NET components, by just using error handling and error properties to communicate error information, and that might be enough.
+  
+But if you want to do runtime Debugging, set breakpoints, step through .NET code and examine live objects and variable and so on, then Visual Studio is the only reasonable choice.
+
+So lets debug our .NET Component doing the following:
+
+* Set up debugging in Visual Studio 
+* Start the project by running Visual FoxPro with the Debugger
+* Starting at the FoxPro command window
+* Run the FoxPro code that calls into .NET via Interop
+* Set a breakpoint in the .NET code
+* Step through
+* Return back to FoxPro
+
+The first step is to configure our project. There are two ways to do this:
+
+* Debug Configuration Settings
+* `launchprofiles.json`
+
+The former sets the latter so this is essentially a different path to the same endpoint. 
+
+#### Setting up Debugging
+To set up debugging with the UI tool:
+
+* Go to the Project node in Solution Explorer
+* Right click and select **Properties**
+* Select the Debug tab
+* Click on Open Debug Launch Profile UI
+
+![](LaunchProfileUi.png)
+
+* Click the first icon and select **Executable** (important)
+* This creates a new profile
+* Set the Executable and point at `vfp9.exe`
+* Set the Working Directory and point at your FoxPro app folder
+* Folder should be from where to run your test prg/app
+* Remove the old profile and rename yours
+* Here I rename to `FoxProInterop Debugging` as Profile Name
+
+This ends up producing a `\Properties\launchprofile.json` in the project that looks like this:
+
+```json
+{
+  "profiles": {
+    "FoxProInterop Debugging": {
+      "commandName": "Executable",
+      "executablePath": "c:\\programs\\vfp9\\vfp9.exe",
+      "workingDirectory": "C:\\wwapps\\Conf\\FoxProDotNet\\FoxPro"
+    }
+  }
+}
+```
+
+> Personally I just edit the launchprofile manually which is quicker than the user interface. The key feature here is `commandName: "Executable"` - the default is `Project` which tries to run the compiled assembly which doesn't work here since we create a library rather than a startable application.
+
+To start debugging now:
+
+* Make sure the project is the  **Startup Project** (if more than 1)
+* Set a breakpoint in the `Interop.HelloWorld()` method
+* Click the `Play` button in the toolbar (or press `F5`) to start debugging
+* FoxPro pops up at the Command Window
+* Run your test program: `DO Interop.prg`
+
+![](VisualStudioDebugger.png)
+
+You can now step through your code, inspect local variables, any explicit watches you've set up, make changes to values, jump through the call stack etc. You can also use the **Intermediate Window** to evaluate any expression - calling methods or get property values etc.
+
+The execution point can be moved around in many scenarios by simply dragging it to a new location. This doesn't work for everything - some scenarios that code couldn't naturally reach are not allowed but you can easily re-run code that you to examine again to understand what happened (yeah I do this a lot! :smile:).
+
+#### Hot Reload in the Debugger
+A very new feature in Visual Studio 2022 is the ability to make code changes in **running code** and apply those changes, without restarting the entire application. Again this feature doesn't work for everything - some changes that change the signature of called functions or members can't be recompiled in place - but a lot of small changes can actually be made without recompiling the code. This means you can start the debugger and almost interactively build your code in .NET while you simply re-run your code.
+
+This is especially useful for COM Interop because remember that .NET assemblies once loaded lock the DLL they're housed in, and cannot be unloaded directly - this saves you the many steps of stopping the FoxPro app, going back into Visual Studio, compiling and then re-running the application and starting it back up.
+
+For a simple example of this run the `HelloWorld.prg` to load the application. Then go into Visual Studio and change the following from:
+
+```csharp
+return "Hello World, " + name +
+       ". Time is: " + DateTime.Now.ToString("HH:mm:ss");
+```
+
+Run the application with that and you get a date like `17:19:22`.
+  
+Then change the above to a different date format:
+
+```csharp
+return "Hello World, " + name +
+       ". Time is: " + DateTime.Now.ToString("MMM  dd, yyyy hh:mm tt");
+```
+
+And you get `Oct 14, 2022 05:22 pm`.
+
+Neat! This can be a big time saver especially for COM Interop components.
+
+Just keep in mind that some changes won't allow for this to work and the editor will warn you:
+
+![](HotReloadCantReload.png)
+
+In this case I added a parameter to a method which changes signature and that breaks hot reload. 
+
+Even with these limitations this feature is incredibly useful and can help cut down on the time it takes to figure out how to get code running as you can rapidly iterate the .NET code.
+
+## Discovering .NET Functionality
+One of the things you'll find yourself doing a lot of when you're using .NET is trying to discover functionality of components. There are thousands of components available but quite a lot of them are not extensively documented so code discovery is very important. 
+
+There are many tools both native and external that can help with finding out what functionality is available and ways to test and experiment with code quickly in .NET.
+
+### IntelliSense
+The most obvious tool is IntelliSense which you end up using no matter what tool you use to edit .NET code short of Notepad. Any editor that has basic C# support likely has some support for IntelliSense that provides deep type discovery as you access functionality.
+
+IntelliSense triggers on typing a `.` in the editor, both in VS Code and Visual Studio. Additionaly code hints and behaviors are accessible via `alt-.`.
+
+Here's plain IntelliSense in VS Code:
+
+![](IntelliSense.png)
+
+And then again once you select a property or method which in this case shows the method signature, plus the documentation:
+
+![](MethodIntellisense.png)
+
+IntelliSense is a great tool to discover immediate class member discovery as long as you can figure out the base functionality of a component.
+
+One trick to discover additional types is to start typing the top level namespace and start drilling inwards to discover top level classes and nested feature namespaces:
+
+![](IntelliSenseDrillIn.png)
+
+### Using a Decompiler Tool
+IntelliSense works as long as you have some idea what you're looking form. If you have no documentation or you just need to see the entire library from a high level to discover base types, you can use a Decompiler tool that allows you to deconstruct libraries by showing you all .NET types and their members.
+
+There are a number of tools that can help you with this:
+
+* Reflector  (free for pre-v6, commercial after)
+* DotPeek (JetBrains - free)
+* JustDecompile (Telerik - free)
+* IL Spy (open source)
+
+I've included a copy of pre-v6 Reflector that you can play around with in the samples' `\Tools\ReflectorV6` folder.
+
+To give you an idea, here is our sample `FoxProInterop.dll` displayed in Reflector:
+
+![](ReflectorTypes.png)
+
+You can see that Reflector shows all the namespaces, classes and members and you can then drill into to inspect parameters and signatures for the types and methods. You can also quickly jump to related types that are assigned to properties or used as parameters or return values to methods.
+
+Essentially these tools allow you to browse libraries. These libraries are also **decompilers** and can for the most part show you to source code for classes or individual methods. .NET code compiles into well-known byte code that can with some effort be decompiled back into its original source code. You'll lose things like internal variable names but the code structure can fairly reliably be retrieved this way. This can be useful either to figure out what code does, or in some case let you lift a small bit of code that you can reuse (assuming the license permits it).
+
+I highly recommend getting one of these tools for FoxPro Interop in particular. If you're using wwDotnetBridge without creating .NET components this is especially useful since you won't get IntelliSense to help you in that scenario.
+
+### LinqPad: A Command Window for .NET
+A great way to experiment with .NET in a very small environment is by using a tool called [LinqPad](https://www.linqpad.net/). LinqPad is like a FoxPro Command Window, but for .NET. You can quickly create or paste a small snippet of .NET code and execute it. You can also load quickly load NuGet packages or libraries (like our .NET component) and create a small program that can execute and output data.
+
+It's a great tool for quickly trying out ideas or even for creating standalone methods and testing them in a very interactive environment.
+
+In LinqPad I like to work in **Progam** mode which is basically a class with the `Main()` function that is the entry point. You can use `Console.WriteLine()` or the `.Dump()` extension method to output values to the Results window. The `.Dump()` method outputs entire object structures so you can drill into the actual objects with live values which is a powerful discovery tool.
+
+I like **Program** because it allows you add additional methods that you can call from Main (or whereever), which makes it possible to abstract code for reuse once you get it working. You can even create classes inside of this program and then use the classes in the code.
+
+Here's a basic example that demonstrates using the library we created and testing it quickly:
+
+![](LinqPad.png)
+
+I added the `FoxProInterop.dll` reference from:
+
+* Query Menu
+* References and Namespaces
+* You can also add NuGet Packages
+
+![](LinqPadReferences.png)
+
+With that in place I can now press F5 to run the code. I can set breakpoints to stop in the code and use the built in debugger to step through the code and examine objects contents etc.
+
+LinqPad is a great tool for:
+
+* Quickly checking for some C# Syntax feature
+* Creating a small self contained program
+* First testing .NET code you want to run with wwDotnetBridge
+* Discover functionality via IntelliSense
+
+I use LinqPad **all the time** to remember/check how .NET features behave with specific inputs, and frequently to build small utiility functions interactively.
+
+> I highly recommend that whenever you plan on calling .NET code from FoxPro, to **first write the code out in .NET using LinqPad** or a Test Project.   
+>  
+>That way you can:
+> 
+> * Make sure the code works as expected in .NET
+> * See how the code is supposed to work
+> * Review and capture the type signatures for each method or property access
+>  
+> It's much better to run FoxPro against working .NET code, vs having to fight unpredictable behavior inside of .NET.
+
+There are two versions of LinqPad:
+
+* LinqPad 5 which uses Full .NET Framework
+* LinqPad 7 which works with .NET Core
+
+For FoxPro usage you probably want to use the older LinqPad 5 version. 
+
+### Creating a Test Project
+In a similar vein to using LinqPad, if you're building a more complex components in .NET code you might consider creating a separate .NET Test project.
+
+Tests can serve a similar purpose as LinqPad in letting you quickly run single function code in a more interactive fashion. Test also serve as a functional project component to actually test behavior of your application and can ensure that your code works as expected. If tests cover a large portion of your code tests can help detect breaking changes caused by potentially unrelated code changes.
+
+I'm not going to pontificate on use of tests here but rather point to them as a quick discovery tool that you can use to test your .NET easily outside of calling it from FoxPro.
+
+To create a test project you can create another project either from the command line or Visual Studio. To create a test project with the Command line use:
+
+```ps
+dotnet new mstest -f net5.0 -n FoxProInterop.Test
+cd FoxProInterop.Test
+dotnet build
+```
+
+or you can use Visual Studio and add a **New Project .NET Core Test Project** to the Solution.
+
+I use .NET 5.0 here to avoid the new C# 10 syntax used by the template. As for the main project you need to change the project's target framework. When it's all said and done you should have a project like this:
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
+    <PackageReference Include="coverlet.collector" Version="3.1.2" />
+  </ItemGroup>
+
+</Project>
+```
+
+Next we'll need to add a reference to the `FoxProInterop` project.
+
+In Visual Studio you can right click on the project and 
+
+![](AddProjectToTtestReference.png)
+
+If you're doing this in code you can add this manually to the `FoxProInteropTests.csproj` project file:
+
+```xml
+<Project>
+...
+    <ItemGroup>
+        <ProjectReference Include="..\FoxProInterop\FoxProInterop.csproj" />
+    </ItemGroup>
+</Project>
+```
+
+If we then create a test method that checks basic operation of the class:
+
+```csharp
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+
+namespace FoxProInterop.Test
+{
+    [TestClass]
+    public class FoxProInteropTests
+    {
+        [TestMethod]
+        public void HelloWorldTest()
+        {
+            var inst = new Interop();
+            var result = inst.HelloWorld("risck");
+            
+
+            Assert.IsNotNull(result);
+            Console.WriteLine(result);
+            Assert.IsTrue(result.Contains("rick"), "Doesn't match name");
+        }
+
+    }
+}
+```
+
+From VS Code and the Command line we can run it this way via `dotnet test`. Make sure you run it from the test project's folder:
+
+![](TestFromVsCode.png)
+
+Note the first test passes with a valid value, the second fails with an invalid value. Test will pass if they run successfully and none of the `Assert()` calls fail. Test fail if the code doesn't compile, has a runtime error or any of the asserts fail.
+
+From Visual Studio this is a little easier as you can use the Visual Studio test runner:
+
+![](VisualStudioRunTest.png)
+
+This is obviously much nicer, as you get a nice view of all of your tests and their previous execution status in a sticky window.
+
+You can add many test methods to a single test class, and you can create multiple test classes and all of these tests can be run in batch or individually.
+
+## Some Examples of Interop Libraries
+Before I finish up here I want to show a few examples that I've exposed as .NET Libraries from FoxPro and in the process explain the rational of why. 
+
+There are a number of different scenarios for .NET Integration:
+
+* Single function integration
+* Support library or helper functions
+* Exposing a .NET Library to FoxPro with a simpler interface
+* An application general purpose library 
+
+### Single Function Integration
+This type of integration is kind of what we've talked about in all the examples so far. We have something that needs to be done in .NET that involves more than a few lines of .NET code and it's generally easier to do this inside of .NET than using `wwDotnetBridge` on its own so we create a library with one or a few self-contained functions.
+
+The Markdig example was a good candidate for this scenario. If it's a simple operation that's a one off you probably want to create a `static` method that you can call with one or a few parameters:
+
+To review:
+
+```csharp
+public class Markdown
+{
+    public static string ToHtml(string markdownText)
+    {
+        var builder = new MarkdownPipelineBuilder()
+            .UseAdvancedExtensions()
+            .UseDiagrams()
+            .UseGenericAttributes();
+        var pipeline = builder.Build();
+        
+        return Markdig.Markdown.ToHtml(markdownText, pipeline, null);
+    }
+}
+```
+
+Remember, it's best not to pass too many parameters - if you need to pass a lot of data opt to pass an object that is descriptive of the parameters you want to pass:
+
+```cs
+public class MarkdownParameters 
+{
+    public string MarkdownText {get; set; }
+    
+    public bool AdvancedExtensions {get; set;}
+    public bool UseDiagrams {get; set; }
+    public bool UseGenericAttributes {get; set; }
+}
+```
+
+then the method can accept this parameter
+
+```cs
+public static string ToHtml(MarkdownParameters markdownParms)
+{
+    // use the bools to customize the pipeline
+    if (markdownParms.AdvancedExtensions) 
+    {
+        ...    
+    }
+    ...
+    
+    var pipeline = builder.Build();
+    return Markdig.Markdown.ToHtml(MarkdownParameters.MarkdownText,
+                                   pipeline, null);
+}
+```
+
+Using `static` method is not a requirement for this scenario. You can also use a class that can be instantiated and called. The point of this scenario is more about having a very focused single operation that abstracts code in .NET which is quite common.
+
+### Helper of Utility Functions
+A slightly more sophisticated scenario is that of a utility helper library where you bunch together a bunch of functionality into a class of related operations. 
+
+An example of this is an encryption library I created some time ago called [wwEncryption](https://client-tools.west-wind.com/docs/_4c10w1prc.htm). Basically this class provides two-way encryption, hashing and a few related functions like CRC calculation and binary encoding features that can be integrated into an application. It uses the .NET built-in encryption classes to provide an easy to use wrapper around the somewhat complex code in .NET.
+
+The idea is to:
+
+* Simplify the .NET Encryption logic into easy to call static methods
+* Create a FoxPro `wwEncryption` Wrapper class that can call these methods
+
+I've included the [C# class](https://github.com/RickStrahl/VirtualFoxFest2022-FoxProDotnet/blob/main/Dotnet/wwEncryption/wwEncryption/EncryptionUtils.cs) and [FoxPro class](https://github.com/RickStrahl/VirtualFoxFest2022-FoxProDotnet/blob/main/Dotnet/wwEncryption/wwEncryption.prg) in the examples and it's also part of the commercial version of `wwDotnetBridge` in the West Wind Client Tools. 
+
+I don't want to rehash all the code, but show one piece of it for encyrption to demonstrate why this is a .NET component vs calling the code directly from FoxPro. In short it's a bit of code and it's not code that would 'just work' over COM from FoxPro.
+
+<small>*truncated: [full code](https://github.com/RickStrahl/VirtualFoxFest2022-FoxProDotnet/blob/main/Dotnet/wwEncryption/wwEncryption/EncryptionUtils.cs)*</small>
+
+```csharp
+public static class EncryptionUtils
+{
+    public static string EncryptionKey = "4a3f131c";
+    public static bool UseBinHex = false;
+
+    /// <summary>
+    /// Encrypts a string using Triple DES encryption with a two way encryption key.String is returned as Base64 encoded value
+    /// rather than binary.
+    /// </summary>
+    /// <param name="inputString"></param>
+    /// <param name="encryptionKey"></param>
+    /// <param name="useBinHex">BinHex rather than base64 if true</param>
+    /// <param name="provider">TripleDES, AES</param>
+    /// <param name="cipherMode">ECB, CBC, CTS, OFB</param>
+    /// <param name="encryptionKeyHashAlgorithm">Optional key hash algorithm. Null or empty for none</param>
+    /// <param name="encryptionKeySalt">Optional key hash salt</param>
+    /// <param name="ivKey">Optional IV vector bytes as string for AES encryption</param>
+    /// <returns></returns>
+    public static string EncryptString(string inputString, string encryptionKey,
+                                       bool useBinHex = false,
+                                       string provider = null, string cipherMode = null,
+                                       string encryptionKeyHashAlgorithm = null,
+                                       string encryptionKeySalt = null, string ivKey = null)
+    {
+        if (useBinHex)
+            return BinaryToBinHex(EncryptBytes(Encoding.UTF8.GetBytes(inputString),
+                encryptionKey, provider, cipherMode, encryptionKeyHashAlgorithm,
+                encryptionKeySalt, ivKey));
+
+        return Convert.ToBase64String(EncryptBytes(Encoding.UTF8.GetBytes(inputString),
+                encryptionKey, provider, cipherMode,
+                encryptionKeyHashAlgorithm, encryptionKeySalt, ivKey));
+    }
+
+    /// <summary>
+    /// Encodes a stream of bytes using DES encryption with a pass key. Lowest level method that 
+    /// handles all work.
+    /// </summary>
+    /// <param name="inputBytes"></param>
+    /// <param name="encryptionKey"></param>
+    /// <param name="provider">TripleDES, AES</param>
+    /// <param name="cipherMode">ECB (16 bytes), CBC (32 bytes), CTS, OFB   </param>
+    /// <param name="encryptionKeyHashAlgorithm">Optional key hash algorithm. Null or empty for none</param>
+    /// <param name="encryptionKeySalt">Optional key hash salt</param>
+    /// <param name="ivKey">Optional IV vector bytes as a string for AES encryption</param>
+    /// <returns></returns>
+    public static byte[] EncryptBytes(byte[] inputBytes, string encryptionKey, string provider = null,
+                  string cipherMode = null, string encryptionKeyHashAlgorithm = null,
+                  string encryptionKeySalt = null, string ivKey = null)
+    {
+        if (encryptionKey == null)
+            encryptionKey = EncryptionUtils.EncryptionKey;
+
+        SymmetricAlgorithm cryptoProvider;
+
+        if (string.IsNullOrEmpty(provider))
+            provider = EncryptionProvider;
+
+        if (provider == "AES")
+        {
+            if (string.IsNullOrEmpty(ivKey))
+                throw new ArgumentException("You have to pass an IV Key with AES encryption");
+            cryptoProvider = new AesCryptoServiceProvider();
+        }
+        else
+        {
+            cryptoProvider = new TripleDESCryptoServiceProvider();
+        }
+        cryptoProvider.Padding = PaddingMode.PKCS7;
+
+        if (!string.IsNullOrEmpty(ivKey))
+            cryptoProvider.IV = Encoding.ASCII.GetBytes(ivKey);
+
+        if (string.IsNullOrEmpty(cipherMode))
+            cipherMode = "ECB";
+        cipherMode = cipherMode.ToUpper();
+
+        if (!Enum.TryParse<CipherMode>(cipherMode, out CipherMode mode))
+            return null;
+
+        cryptoProvider.Mode = mode;
+
+        if (!string.IsNullOrEmpty(encryptionKeyHashAlgorithm))
+        {
+            var salt = string.IsNullOrEmpty(encryptionKeySalt) ? null : Encoding.UTF8.GetBytes(encryptionKey);
+            cryptoProvider.Key = ComputeHashBytes(encryptionKey, encryptionKeyHashAlgorithm, salt);
+        }
+        else
+        {
+            // key length has to match - typically 32 bytes/chars
+            cryptoProvider.Key = Encoding.UTF8.GetBytes(encryptionKey);
+        }
+
+        ICryptoTransform transform = cryptoProvider.CreateEncryptor();
+
+
+        byte[] Buffer = inputBytes;
+        return transform.TransformFinalBlock(Buffer, 0, Buffer.Length);
+    }
+}    
+```
+
+As you can see each of the methods are static so they can be called without an instance from FoxPro which makes this a single call so it's fast (1 COM call vs. at least 2).
+
+FoxPro only interfaces with the first method - the second method is actually an internal helper methods that does the real work of parsing the different parameter options. 
+
+> #### The Horror: So many Parameters!
+> Note that I'm actually breaking my advice I gave earlier in this article: I'm passing a lot parameters to this method, and it would actually be cleaner to pass in a parameter object instead, right? 
+>
+> There's a reason for this in this case: Performance. Encryption is potentially a high frequency operation, so I wanted to minimize the amount of COM calls that have to be made. So this interface is very much **non-chatty** - ie. a single method call over COM. The trade off is a long parameter list, but the alternative would be a parameter object that would have to be created - over COM - in FoxPro and each value would have to be set also over COM. In short, there's some overhead. For most scenarios this fine, but in this case for these methods that are potentially high traffic, minimizing COM calls and opting for more parameters was a conscious choice.
+
+On the FoxPro end there's a FoxPro class that has mapping methods for the top level methods of this object:
+
+```foxpro
+DEFINE CLASS wwEncryption AS Custom
+
+oBridge = null
+
+************************************************************************
+*  Init
+****************************************
+***  Function:
+***    Assume:
+***      Pass:
+***    Return:
+************************************************************************
+FUNCTION Init()
+
+this.oBridge = GetwwDotNetBridge()
+IF (this.oBridge == null)
+   ERROR "Unable to load wwDotnetBridge"
+ENDIF   
+
+ENDFUNC
+*   Init
+
+
+************************************************************************
+*  EncryptString
+****************************************
+***  Function: Encrypts a string with a pass phrase using TripleDES
+***            or AES encryption.
+***    Assume: 
+***      Pass: lcInput         - String to encrypt
+***            lcEncryptionKey - pass phrase to encrypt string with
+***                              Optional - if not uses global EncryptionKey
+***            llUseBinHex     - opt. BinHex encoding of binary, otherwise Base64
+***            lcProvider      - opt. TripleDES*, AES 
+***            lcCipherMode    - opt. ECB*, CBC, CTS, OFB
+***            lcHashAlgo      - opt. hash algorith for for key hash (using HASH names)
+***            lcEncryptipKeyHashSalt - opt. Key Salt 
+***            lcIvKey         - opt. Iv Key for AES
+***    Return: Encrypted string in Base64 or BinHex Empty on Error
+************************************************************************
+FUNCTION EncryptString(lcInput, lcEncryptionKey, llUseBinHex, ;
+                       lcProvider, lcCipherMode, ;
+                       lcEncryptionKeyHashAlgo, lcEncryptionKeyHashSalt,;
+                       lcIvKey)
+LOCAL lcError, lcResult
+
+IF EMPTY(lcEncryptionKey)
+  lcEncryptionKey = null
+ENDIF  
+
+IF VARTYPE(lcProvider) # "C"
+   lcProvider = null
+ENDIF
+IF VARTYPE(lcCipherMode) # "C"
+  lcCipherMode = null
+ENDIF
+IF VARTYPE(lcEncryptionKeyHashAlgo) # "C"
+  lcEncryptionKeyHashAlgo = "MD5"   && legacy mode - pass empty string for none
+ENDIF  
+IF VARTYPE(lcEncryptionKeyHashSalt) # "C"
+  lcEncryptionKeyHashSalt = null
+ENDIF
+IF VARTYPE(lcIvKey) # "C"
+  lcIvKey = null
+ENDIF
+
+lcError = ""
+lcResult = ""
+TRY 
+	lcResult =this.oBridge.InvokeStaticMethod(;
+                   "wwEncryption.EncryptionUtils",;
+                   "EncryptString",;
+                   lcInput,lcEncryptionKey, llUseBinHex,;
+                   lcProvider, lcCipherMode, ;
+                   lcEncryptionKeyHashAlgo, lcEncryptionKeyHashSalt,;
+                   lcIvKey)
+CATCH TO loException
+	lcError = THIS.oBridge.FixComErrorMessage(loException.Message)
+ENDTRY
+
+
+*** Rethrow Error
+IF !EMPTY(lcError)
+   ERROR lcError
+ENDIF
+
+RETURN lcResult                                   
+ENDFUNC
+*   EncryptString
+
+
+FUNCTION DecryptString(lcEncryptedText, lcEncryptionKey, llUseBinHex,;
+                       lcProvider, lcCipherMode, ;
+                       lcEncryptionKeyHashAlgo, lcEncryptionKeyHashSalt,;
+                       lcIvKey)
+...
+ENDFUNC
+
+...
+
+ENDDEFINE
+```
+
+The class holds an instance of the `wwDotnetBridge` object to make the static method call in the FoxPro wrapper method `EncryptString()`. The method doesn't do much other than:
+
+* Parse and format the incoming parameter
+* Make the .NET method call
+* Handle any errors
+* return the result
+
+The idea is simple: Let the .NET code do all the heavy lifting and simply have the FoxPro code be the interface. 
+
+> #### Always wrap wwDotnetBridge Calls
+>I highly recommend that if you create your own .NET library or use a third party library to create a corresponding FoxPro wrapper class. This class should create a wwDotnetBridge instance and load any libraries and dependencies and if dealing with instance classes rather than static methods as I do in this example, load the .NET instance into a stored property.  
+>
+> These wrappers allow you handle errors in a predictable way and allow you to format and fix up incoming parameters and clean up results as needed. It ensures that you have a single point of access to the .NET component in your FoxPro code
+
+So this example demonstrates what I call a function library where you basically call several single purpose functions. Use this for creating your own library of small helpers in your applications. For example, in almost every FoxPro application I have one of these FoxPro and C# class combos to act as a drop point for random .NET functionality that I might need in my application. 
+
+### A Library Wrapper
+The next example is what I call a library wrapper, which is a little more involved than the previous example which is more like a function library of unrelated functionality. A very common scenario is this: There's a full featured .NET library that you would like to interface with from FoxPro, but there's too much code to write to do it from FoxPro. So instead you create a wrapper of classes that abstract the features you actually need out of that library in .NET and then expose that. 
+
+I have many examples of this in my applications, but here is a relatively simple one, which is the `wwSmtp` class I use in the West Wind commercial tools (Web Connection and Client Tools). This class is a wrapper around the built-in .NET `System.Net.SmtpClient` set of classes that allow you to send SMTP email. The .NET class isn't just a single class but sending an email involves creating a several objects that are passed to one another.
+
+So I created a simpler, flatter wrapper interface that closely matches an older email interface that I had built in C++ many years before .NET came out. The result is a single level class in .NET and FoxPro that you set all the properties, plus a few support methods that allow setting multiple message segments, attachments easily from FoxPro. The FoxPro class is literally setting a handful of properties and calling `.SendMail()` while the .NET Code deconstructs those parameters into the various object required to send the email.
+
+I don't want to go into the boring code details, but here's a screen shot of the wrapper flattened `wwSmtp` class in Visual Studio:
+
+![](wwSmtpVs.png)
+
+The FoxPro class on the other end then mirrors the .NET class and simply calls the corresponding methods. 
+
+The `SendMail()` method in the FoxPro class gives an idea how this works:
+
+```foxpro
+************************************************************************
+* wwSmtp ::  SendMail
+****************************************
+***  Function: Self contained method that sends a single
+***            email message.
+***    Assume:  Uses .NET / wwDotNetBridge.dll
+***      Pass:  nothing - set properties/AddAttachment/AddALternateView
+***    Return: .T. of .F. check cErrorMsg on .F. result
+************************************************************************
+FUNCTION SendMail
+LOCAL lcSubject, llResult
+
+this.CreatewwSmtp()  && ensure instance is loaded
+this.SetError()
+
+lcSubject=TRIM(THIS.cSubject)	
+lcSubject = CHRTRAN(lcSubject,CHR(13)+CHR(10)," ") && Strip out CRLF
+
+LOCAL loSMTP as Westwind.wwSmtp
+loSmtp = this.oSmtp  && .NET COM Instance
+
+loSmtp.MailServer = TRIM(THIS.cMailServer)
+loSmtp.ServerPort = this.nServerPort
+loSmtp.UseSsl = this.lUseSsl
+loSmtp.Timeout = this.nTimeout
+
+loSmtp.Username = TRIM(this.cUsername)
+loSmtp.Password = TRIM(this.cPassword)
+
+loSmtp.Subject = lcSubject
+loSmtp.Message = TRIM(THIS.cMessage)
+loSmtp.ContentType = TRIM(THIS.cContentType)
+loSmtp.AlternateText = (this.cAlternateText)
+loSmtp.AlternateTextContentType = this.cAlternateContentType
+
+loSmtp.SenderEmail = this.cSenderEmail
+loSmtp.SenderName = this.cSenderName
+
+loSmtp.Attachments = this.cAttachment
+loSmtp.UserAgent = this.cUserAgent
+
+*** Message options
+loSmtp.ReturnReceipt = this.lReturnReceipt
+loSmtp.ReplyTo = this.cReplyTo
+loSmtp.Priority = this.cPriority
+
+*** Add explicit headers
+loSmtp.AddHeadersFromString(this.cExtraHeaders)
+
+loSmtp.Recipient = this.cRecipient
+loSmtp.CC = this.cCCList
+loSmtp.BCC = this.cBccList
+
+IF this.lAsync
+	loSmtp.SendMailAsync()
+	llResult = .T.
+ELSE	
+	llResult = loSmtp.SendMail()
+	IF !llResult
+		this.SetError(loSmtp.ErrorMessage)
+	ENDIF
+ENDIF
+
+*** Must clear out headers
+this.cExtraHeaders = ""
+
+RETURN llResult
+*  wwSmtp ::  SendMail
+```
+
+The `THIS.oSmtp` object is the wwSmtp  .NET instance of the `wwSmtp` .NET class that's used to send the email. This the self contained function that does the operation - there are other methods that open a connection and send individual messages for multiple recipients on the same connection. But as you can see the complexity of the .NET functionality has been whittled down to something that's quite easy to use, while still giving access to the underlying functionality if absolutely required because you have access to the `THIS.oSmtp` instance.
+
+Since in this case I'm dealing with an object instance there need to be methods that create the instance and then also clean up that instance when the class is destroyed which is important to ensure you don't leave hanging references around causing a memory leak:
+
+```foxpro
+FUNCTION CreatewwSmtp(lcDotnetVersion)
+
+IF ISNULL(this.oBridge)
+	this.oBridge = GetwwDotnetBridge(lcDotnetVersion)
+ENDIF
+
+IF ISNULL(this.oSmtp)
+	this.oSmtp = this.oBridge.CreateInstance("Westwind.wwSmtp")
+	IF ISNULL(this.oSmtp)
+	   *** Throw an error with the actual error message
+	   ERROR this.oBridge.cErrorMsg
+	ENDIF
+ENDIF
+ENDFUNC
+*  wwSmtp ::  CreatewwSmtp
+
+FUNCTION Dispose()
+
+IF !ISNULL(this.oSmtp)
+	this.oSmtp.Dispose()
+ENDIF	
+this.oSmtp = null
+this.oBridge = null
+
+ENDFUNC
+*  wwSmtp ::  Dispose
+
+************************************************************************
+* wwSmtp ::  Destroy
+****************************************
+FUNCTION Destroy()
+this.Dispose()
+ENDFUNC
+*  wwSmtp ::  Destroy
+```
+
+In my own applications, and in work I've done for customers, this particular scenario is quite a common one, where I basically abstract a complex set of operations into something that is specifically tailored for the calling application. Here's it's a component but a few other scenarios for me:
+
+* **Wrapper around a Credit Card Processing Providers**  
+Created a wrapper interface that works with BrainTree, Authorize.NET, Stripe and several small providers using a unified interface to process credit cards for all of them. The .NET class provides the core abstraction with a fairly flat interface that consolidates the various libraries into a single class with only the required fields that need to be sent for the specific application. 
+
+* **A .NET Type Parsing Library in Html Help Builder**   
+I needed to integrate .NET type parsing into Help Builder so that I could import .NET types and document them. The .NET code uses very complex Reflection code, parsing of HTML Doc files to parse entire .NET assemblies into documentation that can then be exported to a Web site as part of a larger Documentation project. The class exposes a hierarchy of objects that easily accessible over COM from FoxPro and FoxPro uses these objects directly to display the type information in tree format for the importer that parses the classes into the Help Builder documentation classes.
+
+![](HelpBuilderDotnetImport.png)
+
+* **SOAP Web Service Wrappers**  
+SOAP Web Services can be imported in .NET via Windows Communication Foundation (WCF), and you can then create wrapper methods to instantiate the service classes and call them from FoxPro. In this scenario the FoxPro app mostly works directly with the exported COM types, but the custom .NET class wrapper provides the WCF service instantiation and initial connection which uses several difficult to access objects.
+
+All of these examples (and many more) involve creating a .NET component that exposes base functionality that is then accessed by FoxPro. The wrapper simplifies the .NET libraries or interfaces and exposes only a relevant subset with much of the heavy processing handled in .NET and FoxPro only picking up the final results.
+
+## Summary
+Phew - a lot covered in this article!
+
+.NET provides a great way to extend the functionality of FoxPro beyond FoxPro's base features. These days .NET provides the most common extensibility framework for Windows components from Microsoft, as well as many third party integration and tools. The main reason .NET is well suited to this is because it's relatively easy to integrate with from FoxPro through it's COM capabilities. With the features of wwDotnetBridge you can access most .NET features relatively easily from FoxPro.
+
+The goal of this paper has been to give you an introduction to integrating .NET into FoxPro with focus of creating custom .NET components that provide an interface layer for your FoxPro code to simplify interacting with .NET code from FoxPro. We've seen several ways that you can accomplish that:
+
+* Using plain COM Interop from FoxPro
+* Using wwDotnetBridge from FoxPro
+* Creating custom .NET Components and interact with those using wwDotnetBridge
+
+I hope this paper has given you a good idea of what's involved in doing that using both the new low impact SDK tooling that allow you compile .NET from the terminal without any special tooling, or by using a traditional IDE like Visual Studio or Rider to create your .NET components. We've seen how to build components in a FoxPro friendly way to help ease the COM interface that's used for communication between FoxPro and .NET.
+
+I know this type of integration has completely changed how I build many FoxPro application, with the ability to offload more and more functionality to .NET. I hope this session and paper give you some inspiration to integrate some of your own components using .NET as well.
+  
+Onwards and upwards.
+
+
+## Resources
+* [.NET SDK Downloads (for development)](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+* [.NET Runtime Downloads (32 bit Desktop Runtime)](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 * [LinqPad](https://www.linqpad.net/) for Testing .NET Code (command window)
 * .NET Decompilers (discover classes/members/names)
     * .NET Reflector (old version (v6) is free)

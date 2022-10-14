@@ -8,11 +8,12 @@ namespace FoxProInterop
 
         static Markdown()
         {
+
             var builder = new MarkdownPipelineBuilder()
             .UseAdvancedExtensions()
             .UseDiagrams()
             .UseGenericAttributes();
-        
+
             pipeline = builder.Build();
         }
 
