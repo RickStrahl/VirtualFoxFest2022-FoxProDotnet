@@ -7,12 +7,16 @@ This is the session repository that provides access to:
 * [Session White Paper PDF](Documents/Strahl_FoxProDotnet.pdf) ([html](Documents/Markdown/FoxProDotnet.md))
 * [Session Slides](Documents/Strahl_FoxProDotNet.pptx)
 * YouTube Session <small>*(not published yet)*</small>
-* .NET and FoxPro Examples <small>(in this repo)</small>
+* .NET and FoxPro Examples
+   * [FoxPro](./FoxPro)
+   * [.NET](./DotNet)
 
 **Additional Resources** 
 
+* [wwDotnetBridge Source Code on Github](https://github.com/rickstrahl/wwdotnetbridge)
 * [wwDotnetBridge Documentation](https://client-tools.west-wind.com/docs/_24n1cfw3a.htm)
 * [Original wwDotnetBridge White Paper](https://west-wind.com/presentations/wwdotnetbridge/wwDotnetBridge.pdf)
+* [West Wind Client Tools (commercial version)](https://client-tools.west-wind.com)
 
 ## Session Description
 
