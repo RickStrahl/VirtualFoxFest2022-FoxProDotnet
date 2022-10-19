@@ -1,4 +1,5 @@
 ﻿using System;
+using Markdig;
 
 namespace FoxProInterop
 {
@@ -19,16 +20,25 @@ namespace FoxProInterop
             return result;
         }
 
-        public int Add(int num1, int num2)
+        public decimal Add(decimal num1, decimal num2)
         {
             return num1 + num2;
         }
 
-        public decimal Multiply(decimal num1, decimal num2)
+        public long Multiply(int num1, int num2)
         {
             return num1 * num2;
         }
 
+
+        public static string MarkdownToHtml(string markdownText)
+        {   
+            var builder = new MarkdownPipelineBuilder();
+            var pipeline = builder.Build();
+            return Markdig.Markdown.ToHtml(markdownText, pipeline, null);
+        }
+
+        
         public Person GetPerson()
         {
             var person = new Person();

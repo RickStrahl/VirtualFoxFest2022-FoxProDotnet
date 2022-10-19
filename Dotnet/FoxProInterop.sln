@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoxProInterop", "FoxProInterop\FoxProInterop.csproj", "{FB0E4B50-3191-4BC8-8ABB-D82558BCAEEC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoxProInterop.Test", "FoxProInterop.Test\FoxProInterop.Test.csproj", "{DEDD6929-840B-4156-AB7A-35C6A68AF33E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoxInterop", "FoxInterop\FoxInterop.csproj", "{126F971F-A702-4376-8489-60BD38EDAE8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FB0E4B50-3191-4BC8-8ABB-D82558BCAEEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB0E4B50-3191-4BC8-8ABB-D82558BCAEEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB0E4B50-3191-4BC8-8ABB-D82558BCAEEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FB0E4B50-3191-4BC8-8ABB-D82558BCAEEC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DEDD6929-840B-4156-AB7A-35C6A68AF33E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DEDD6929-840B-4156-AB7A-35C6A68AF33E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEDD6929-840B-4156-AB7A-35C6A68AF33E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEDD6929-840B-4156-AB7A-35C6A68AF33E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{126F971F-A702-4376-8489-60BD38EDAE8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{126F971F-A702-4376-8489-60BD38EDAE8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{126F971F-A702-4376-8489-60BD38EDAE8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{126F971F-A702-4376-8489-60BD38EDAE8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

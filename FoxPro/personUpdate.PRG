@@ -5,7 +5,7 @@ do wwDotNetBridge
 LOCAL loBridge as wwDotNetBridge
 loBridge = GetwwDotnetBridge()
 
-? loBridge.LoadAssembly("FoxProInterop.dll")
+? loBridge.LoadAssembly("FoxInterop.dll")
 loDotnet = loBridge.CreateInstance("FoxProInterop.Interop")
 
 *** Important: In order to pass an object that object

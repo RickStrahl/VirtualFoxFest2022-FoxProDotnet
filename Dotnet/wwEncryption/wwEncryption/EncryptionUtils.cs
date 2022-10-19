@@ -98,13 +98,14 @@ namespace wwEncryption
             if (provider == "AES")
             {
                 if (string.IsNullOrEmpty(ivKey))
-                    throw new ArgumentException("You have to pass an IV Key with AES encryption");
+                    throw new ArgumentException("You ssshave to pass an IV Key with AES encryption");
                 cryptoProvider = new AesCryptoServiceProvider();
             }
             else
             {
                 cryptoProvider = new TripleDESCryptoServiceProvider();
             }
+
             cryptoProvider.Padding = PaddingMode.PKCS7;
 
             if (!string.IsNullOrEmpty(ivKey))

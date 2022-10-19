@@ -14,10 +14,10 @@ loInterop = loBridge.CreateInstance("FoxProInterop.Interop")
 
 ? loInterop.HelloWorld("Rick")
 
-? loInterop.ADd(10.10, 20.20)
+? loInterop.Add(10.10, 20.20)
 
-*lnResult = loInterop.Multiply(1000, 20000)
-
+lnResult = loInterop.Multiply(1000, 20000)
+? lnResult
 
 lnResult = loBridge.invokemethod(loInterop, "Multiply", 1000, 20000)
 ? lnResult

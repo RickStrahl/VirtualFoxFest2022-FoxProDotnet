@@ -4,6 +4,7 @@
 *** Accessing an Array Property using GetPropertyEx()
 *** Accessing nested properties with GetPropertyEx
 CLEAR
+*DO SETENV
 
 *** Load library
 DO wwDotNetBridge
@@ -32,6 +33,7 @@ laCertificates = loStore.Certificates
 
 *** so use indirect access
 lnCount = loBridge.GetProperty(laCertificates,"Count")
+? lnCount
 
 *** Loop through Certificates
 FOR lnX = 0 TO lnCount -1

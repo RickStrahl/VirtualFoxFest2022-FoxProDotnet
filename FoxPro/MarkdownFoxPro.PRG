@@ -1,11 +1,28 @@
 CLEAR
-DO setEnv
+DO SETENV
 
 do wwDotNetBridge
 LOCAL loBridge as wwDotNetBridge
-loBridge = GetwwDotnetBridge()
+loBridge = GetwwDotnetBridge()   && CREATEOBJECT("wwDotnetBridge")
 
-? loBridge.LoadAssembly("FoxInterop.dll")
+? loBridge.LoadAssembly("markdig.dll")
+
+LOCAL loBuilder, loPipeline
+loBuilder = loBridge.CreateInstance("Markdig.MarkdownPipelineBuilder")
+loPipeline = loBuilder.Build()
+
+lcMarkdown = GetMarkdown()
+
+lcHtml = loBridge.InvokeStaticMethod("Markdig.Markdown","ToHtml", lcMarkdown, loPipeline, null)
+? lcHtml
+
+ShowHtml(lcHtml)
+
+RETURN
+
+
+FUNCTION GetMarkdown
+LOCAL lcMarkdown
 
 TEXT TO lcMarkdown NOSHOW
 # Markdown Parsing with wwDotnetBridge
@@ -37,12 +54,6 @@ It's easy to use and quick to get started with.
 ### Markdown Text
 ENDTEXT
 
-*** Initial Code
-lcHtml = loBridge.InvokeStaticMethod("FoxProInterop.Interop", "MarkdownToHtml", lcMarkdown)
+RETURN lcMarkdown
 
-*** Markdown Class
-*lcHtml = loBridge.InvokeStaticMethod("FoxProInterop.Markdown", "ToHtml", lcMarkdown)
-
-? lcHtml
-ShowHtml(lcHtml)
-
+ENDFUNC

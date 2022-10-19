@@ -48,7 +48,7 @@ namespace FoxProInterop
 }    
 ```        
 
-### Additional Methods 1
+### Additional Methods
 
 
 ```csharp
@@ -63,7 +63,7 @@ public long Multiply(int number1, int number2)
 }
 ```
 
-### Static Method and Refactor Class (markdig)
+### Static Method (markdig)
 
 ```cs
 dotnet add package markdig
@@ -74,11 +74,11 @@ public static string MarkdownToHtml(string markdownText)
 {   
     var builder = new MarkdownPipelineBuilder();
     var pipeline = builder.Build();
-    return Markdig.Markdown.ToHtml(markdownText, pipeline, null);
+    return Markdown.ToHtml(markdownText, pipeline, null);
 }
 ```
 
-**Refactored**
+### Refactored Markdown class
 
 ```csharp
 using Markdig;
@@ -110,7 +110,19 @@ namespace FoxProInterop
 }
 ```
 
+### Debug Profile
 
+```json
+{
+  "profiles": {
+    "Profile 1": {
+      "commandName": "Executable",
+      "executablePath": "c:\\programs\\vfp9\\vfp9.exe",
+      "workingDirectory": "C:\\wwapps\\Conf\\FoxProDotNet\\FoxPro"
+    }
+  }
+}
+```
 
 
 ### Additional Class Methods
@@ -182,10 +194,6 @@ namespace FoxProInterop
 }
 ```
 
-### Unit Testing Project
-
-
-
 ### Unit Testing Class
 
 ```cs
@@ -201,7 +209,7 @@ namespace FoxProInterop.Test
         public void HelloWorldTest()
         {
             var inst = new Interop();
-            var result = inst.HelloWorld("risck");
+            var result = inst.HelloWorld("rick");
             
 
             Assert.IsNotNull(result);

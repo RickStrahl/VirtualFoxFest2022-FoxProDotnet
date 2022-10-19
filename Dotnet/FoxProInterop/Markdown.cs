@@ -1,20 +1,27 @@
 using Markdig;
-using Markdig.Extensions.AutoLinks;
 
 namespace FoxProInterop
 {
     public class Markdown
     {
+        // cached pipeline
+        private static MarkdownPipeline Pipeline { get; set; }
 
-        public static string ToHtml(string markdown)
+        // static constructor runs EXACTLY ONCE on first access of a static member
+        static Markdown()
         {
-            var builder = new Markdig.MarkdownPipelineBuilder();
-            builder = builder.UseAdvancedExtensions();
-           var pipeline = builder.Build();
-
-            return Markdig.Markdown.ToHtml(markdown, pipeline, null);
+            var builder = new MarkdownPipelineBuilder()
+                            .UseAdvancedExtensions()
+                            .UseDiagrams()
+                            .UseGenericAttributes();
+        
+            // create and cache the pipeline
+            Pipeline = builder.Build();
         }
 
+        public static string ToHtml(string markdownText)
+        {   
+            return Markdig.Markdown.ToHtml(markdownText, Pipeline, null);
+        }
     }
-
 }
