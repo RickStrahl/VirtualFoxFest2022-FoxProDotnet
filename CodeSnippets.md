@@ -61,12 +61,56 @@ public long Multiply(int number1, int number2)
 {
     return (long) number1 * number2;
 }
+```
 
-public static int Subtract(int number1, int number2)
-{
-    return number1 - number2;
+### Static Method and Refactor Class (markdig)
+
+```cs
+dotnet add package markdig
+```
+
+```cs
+public static string MarkdownToHtml(string markdownText)
+{   
+    var builder = new MarkdownPipelineBuilder();
+    var pipeline = builder.Build();
+    return Markdig.Markdown.ToHtml(markdownText, pipeline, null);
 }
 ```
+
+**Refactored**
+
+```csharp
+using Markdig;
+
+namespace FoxProInterop
+{
+    public class Markdown
+    {
+        // cached pipeline
+        private static MarkdownPipeline Pipeline { get; set; }
+
+        // static constructor runs EXACTLY ONCE on first access of a static member
+        static Markdown()
+        {
+            var builder = new MarkdownPipelineBuilder()
+                            .UseAdvancedExtensions()
+                            .UseDiagrams()
+                            .UseGenericAttributes();
+        
+            // create and cache the pipeline
+            Pipeline = builder.Build();
+        }
+
+        public static string ToHtml(string markdownText)
+        {   
+            return Markdig.Markdown.ToHtml(markdownText, Pipeline, null);
+        }
+    }
+}
+```
+
+
 
 
 ### Additional Class Methods

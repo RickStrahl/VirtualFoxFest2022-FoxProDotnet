@@ -25,7 +25,7 @@ namespace FoxProInterop
             return number1 + number2;
         }
 
-        public int Multiply(int number1, int number2)
+        public long Multiply(int number1, int number2)
         {
             return (long)number1 * number2;
         }

@@ -27,21 +27,23 @@ loStore.Open(leReadOnly) &&leReadOnly)
 *** Collection of Certificates (custom collection not an array, not normal collection)
 laCertificates = loStore.Certificates
 
-*** Collections don't work over regular COM Interop
+*** This doesn't work: Inherited collection type
+*? laCertificates.Count
+
 *** so use indirect access
 lnCount = loBridge.GetProperty(laCertificates,"Count")
 
 *** Loop through Certificates
 FOR lnX = 0 TO lnCount -1
 	
-	*** Access collection item indirectly	
+	*** Access collection item indirectly using indexer string syntax
 	loCertificate = loBridge.GetProperty(loStore,"Certificates[" + TRANSFORM(lnX) + "]")
 	
 	IF !ISNULL(loCertificate)
 		? loCertificate.FriendlyName
-		? loCertificate.SerialNumber
-		? loBridge.GetPropertyEx(loCertificate,"IssuerName.Name")
-		? loCertificate.NotAfter
+		? "  " + loCertificate.Subject
+		? "  " + loBridge.GetProperty(loCertificate,"IssuerName.Name")
+		? "  " + TRANSFORM(loCertificate.NotAfter)
 	ENDIF
 ENDFOR
 
