@@ -1,26 +1,20 @@
 using Markdig;
+using Markdig.Extensions.AutoLinks;
 
 namespace FoxProInterop
 {
     public class Markdown
     {
-        private static MarkdownPipeline pipeline { get; set; }
 
-        static Markdown()
+        public static string ToHtml(string markdown)
         {
+            var builder = new Markdig.MarkdownPipelineBuilder();
+            builder = builder.UseAdvancedExtensions();
+           var pipeline = builder.Build();
 
-            var builder = new MarkdownPipelineBuilder()
-            .UseAdvancedExtensions()
-            .UseDiagrams()
-            .UseGenericAttributes();
-
-            pipeline = builder.Build();
+            return Markdig.Markdown.ToHtml(markdown, pipeline, null);
         }
 
-        public static string ToHtml(string markdownText)
-        {
-            return Markdig.Markdown.ToHtml(markdownText, pipeline, null);
-        }
     }
-        
+
 }

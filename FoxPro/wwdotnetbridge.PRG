@@ -188,7 +188,7 @@ IF VARTYPE(this.oDotNetBridge) != "O"
    	    DeleteFile(FULLPATH("wwDotNetBridge.dll") + ":Zone.Identifier")
 		
 		#IF IS_WESTWIND
-			DeleteFile(FULLPATH("Newtosoft.Json.dll") + ":Zone.Identifier")
+			DeleteFile(FULLPATH("Newtonsoft.Json.dll") + ":Zone.Identifier")
 			DeleteFile(FULLPATH("Markdig.dll") + ":Zone.Identifier")
 			DeleteFile(FULLPATH("Renci.SshNet.dll") + ":Zone.Identifier")
 		#ENDIF
@@ -1881,13 +1881,13 @@ IF VARTYPE(this.oDotNetBridge) != "O"
 		this.oDotNetBridge = CREATEOBJECT("Westwind.wwDotNetBridge")
 	ELSE	
 		*** Remove the Zone Identifier to 'Unblock'
-	    DECLARE INTEGER DeleteFile IN WIN32API STRING		  			  			
-   	    DeleteFile(FULLPATH("wwDotNetBridge.dll") + ":Zone.Identifier")
+	    DECLARE INTEGER DeleteFile  IN WIN32API AS dnb_DeleteFile STRING 
+   	    dnb_DeleteFile(FULLPATH("wwDotNetBridge.dll") + ":Zone.Identifier")
 		
 		#IF IS_WESTWIND
-			DeleteFile(FULLPATH("Newtosoft.Json.dll") + ":Zone.Identifier")
-			DeleteFile(FULLPATH("Markdig.dll") + ":Zone.Identifier")
-			DeleteFile(FULLPATH("Renci.SshNet.dll") + ":Zone.Identifier")
+		    dnb_DeleteFile(FULLPATH("Newtonsoft.Json.dll") + ":Zone.Identifier")
+			dnb_DeleteFile(FULLPATH("Markdig.dll") + ":Zone.Identifier")
+			dnb_DeleteFile(FULLPATH("Renci.SshNet.dll") + ":Zone.Identifier")
 		#ENDIF
 		
 		LOCAL ARRAY laVersion[1]

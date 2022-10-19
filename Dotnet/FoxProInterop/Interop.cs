@@ -4,30 +4,31 @@ namespace FoxProInterop
 {
     public class Interop
     {
-        public string DefaultName { get; set; } = "Ms. Anonymous";
+        public Person DefaultPerson { get; set; } = new Person();
 
-        public Person DefaultPerson {get; set; } = new Person();
 
-        public string HelloWorld(string name)
+        public string HelloWorld(string name) 
         {
             if (string.IsNullOrEmpty(name))
-                name = DefaultName;
+                name = "n/a";
 
-            return "Hello World, " + name +
-                   ". Time is: " + DateTime.Now.ToString("HH:mm:ss");
+            string result = "Goodbye cruel World " + name +
+                            ". Time is: " +
+                            DateTime.Now.ToString("HH:mm:ss");
+
+            return result;
         }
 
-        public decimal Add(decimal number1, decimal number2)
+        public int Add(int num1, int num2)
         {
-            return number1 + number2;
+            return num1 + num2;
         }
 
-        public long Multiply(int number1, int number2)
+        public decimal Multiply(decimal num1, decimal num2)
         {
-            return (long)number1 * number2;
+            return num1 * num2;
         }
 
-        
         public Person GetPerson()
         {
             var person = new Person();
@@ -40,14 +41,5 @@ namespace FoxProInterop
             return true;
         }
 
-
-        
-        public static string MarkdownToHtml(string markdownText)
-        {
-            var builder = new Markdig.MarkdownPipelineBuilder();
-            var pipeline = builder.Build();
-            return Markdig.Markdown.ToHtml(markdownText, pipeline, null);
-        }
-        
     }
 }

@@ -1,14 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>NET472</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
 
-  	<OutputPath>..\..\FoxPro\bin</OutputPath>
+    <OutputPath>..\..\FoxPro\bin</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="markdig" Version="0.30.4" />
+    <PackageReference Include="westwind.utilities" Version="3.1.15" />
   </ItemGroup>
 
 </Project>

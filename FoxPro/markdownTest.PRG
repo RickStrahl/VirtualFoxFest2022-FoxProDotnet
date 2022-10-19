@@ -6,6 +6,7 @@ DO setEnv
 
 *** Raw wwDotnetBridge
 #IF .T.
+
 do wwDotNetBridge
 LOCAL loBridge as wwDotNetBridge
 loBridge = CreateObject("wwDotNetBridge")
@@ -50,7 +51,6 @@ LOCAL loBuilder, loPipeline
 loBuilder = loBridge.CreateInstance("Markdig.MarkdownPipelineBuilder")
 loPipeline = loBuilder.Build()
 
-
 *** Invoke a static method
 lcHtml =  loBridge.InvokeStaticMethod("Markdig.Markdown","ToHtml",lcMarkdown,loPipeline, null)
 
@@ -63,51 +63,3 @@ RETURN
 #ENDIF
 
 
-
-
-*** Using a class
-#IF .F.
-loParser = CREATEOBJECT("MarkdownParser")
-
-TEXT TO lcMarkdown NOSHOW
-This is some sample Markdown text. This text is **bold** and *italic*.
-
-* List Item 1
-* List Item 2
-* List Item 3
-
-Great it works!
-
-> ### @icon-info-circle Examples are great
-> This is a block quote with a header
-ENDTEXT
-
-
-lcHtml = loParser.Parse(lcMarkdown)
-? lcHtml
-RETURN
-#ENDIF
-
-
-
-#IF .T.
-TEXT TO lcMarkdown NOSHOW
-This is some sample Markdown text. This text is **bold** and *italic*.
-
-* List Item 1
-* List Item 2
-* List Item 3
-
-Great it works!
-
-> ### ![](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Commons-emblem-legal.svg/45px-Commons-emblem-legal.svg.png) Examples are great
-> This is a block quote with a header
-ENDTEXT
-
-lcHtml = Markdown(lcMarkdown)
-? lcHtml
-
-lcHtml = Markdown(lcMarkdown)
-showHtml(lcHtml)
-
-#ENDIF

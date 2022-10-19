@@ -10,7 +10,7 @@
 
 ![](BridgeBanner.jpg)
 
-If you're building modern applications that need to interface with various system or operating system features, you'll likely need external functionality that isn't available natively in FoxPro. Whatever your needs are, you can probably find this functionality in .NET either via built-in .NET system features, or by way of open source or third party libraries. For Windows applications .NET is easily the most comprehensive integration solution as it provides a relatively easy path for interopation between FoxPro and .NET to pass data back and forth and call external functionality.
+If you're building modern applications that need to interface with various system or operating system features, you'll likely need external functionality that isn't available natively in FoxPro. Whatever your needs are, you can probably find this functionality in .NET either via built-in .NET system features, or by way of open source or third party libraries. For Windows applications .NET is easily the most comprehensive integration solution as it provides a relatively easy path for interoperation between FoxPro and .NET to pass data back and forth and call external functionality.
 
 As FoxPro developers we can take advantage of .NET **by using .NET as a proxy** to access .NET features or libraries. We can call into .NET code from FoxPro either via out-of-box COM Interop features, or with the [open source wwDotnetBridge Interop library](https://github.com/RickStrahl/wwDotnetBridge). The latter gives you many more features and more control over how you interact with .NET.
 
@@ -22,35 +22,49 @@ This results in cleaner code, better performance and on the FoxPro side a clean 
  
 Yes, this approach involves writing .NET code - C# most likely - and creating a small project, adding .NET classes, building and compiling into a .NET assembly (a DLL) which you can then call from FoxPro. If you've never used .NET before this can be intimidating, but the reality is that this component integration approach is actually one of the easiest ways to ease into getting started with .NET, as you deal with a small very business specific piece of code. It's a great way to get started with .NET without getting overwhelmed by the huge framework as you are effectively dealing with a very small slice of functionality. Building library level code lets you skip over some of the high level decisions like what UI framework to use and how to build your UI, but instead focus on pure business logic which can be as simple or complex as you choose.. 
 
-> In short, building integration compponents us a great way to get your feet wet with .NET and think about how you can use it to extend your applications beyond just FoxPro code.
+> In short, building integration compponents is a great way to get your feet wet with .NET and think about how you can use it to extend your applications beyond just FoxPro code.
 
 
-The timing of this session is also well timed IMHO: These days it's a **lot easier to create a .NET project** without having to install the still massive Visual Studio and other support tools. These days you can install a single .NET SDK and use the Command Line or generic editor tools to create a .NET project, build and compile it. The process and resources involved are a lot simpler than it used to be in the past. Visual Studio still is easier, but it's no longer a requirement - in fact you can everything you need to build from the command line these days.
+The timing of this session is also well timed: These days it's a **lot easier to create a .NET project** without requiring to install Visual Studio and other support tools. Today you can install a single .NET SDK and use the **Command Line Tools** and **any editor** to create a .NET project, build and compile it. 
+
+While a full IDE like Visual Studio or Rider is more user friendly, it's no longer a requirement for .NET development, and for small components in particular using the command line tools with a small editor like VS Code is a perfectly practical way to build .NET components.
 
 In this session I want to show you get started with using .NET via wwDotnetBridge, initially to call some .NET components, and then show how you can create your own .NET components with minimal effort and use them from FoxPro. In the process I'll explain the key concepts on how this process works and for things that you need to watch out for in the Interop process.
 
-The goal of this session is not to give you deep insight into the nuances of calling .NET code or .NET code structures - I have previous sessions and articles (linked at the end) as well as the wwDotnetBridge documentation that go into detail with that. The focus of this session is on showing you the basics of how you can get started with creating .NET components that can be called from FoxPro and demonstrate why this is a good way to go for many .NET Interop scenarios that are even mildly complex.
+The goal of this session is not get deep into the weeds with the nuances of calling .NET code from FoxPro - there's not enough time to cover all that in a 1 hour session. I have previous sessions and articles (linked at the end) as well as the wwDotnetBridge documentation that go into a bit of detail for that. 
+
+Instead, the focus of this session is on showing you the basic concepts required to create .NET components and call them from FoxPro and why this often is a better alternative than explicitly trying to access even mildly complex .NET directly from FoxPro via wwDotnetBridge or COM Interop.
 
 ## Why use .NET with FoxPro
-FoxPro is a very old tool and while capable, let's face it there are many new technologies out there that provide rich access to features that FoxPro can't natively access. In fact these days there are many things that aren't even exposed to regular Win32 APIs any more.
+FoxPro is a very old tool and while capable, let's face it there are many new technologies out there that provide rich access to features that FoxPro  can't natively access. FoxPro's traditional extension points are:
+
+* COM (IDispatch specifically)
+* Windows 32 API
+* FoxPro FLLs
+
+But even these interfaces often aren't supported with modern APIs and libraries.
 
 ### Extend FoxPro's Reach
-Increasingly new operating system features, and certainly many third party and API integrations are provided for Windows developers in the way of .NET libraries. .NET is not the only way that you can extend FoxPro but it's certainly one of the most common ones as it provides deep integrations with many different technologies.
+Increasingly new operating system features, and certainly many third party and API integrations are provided for Windows developers in the way of .NET libraries. .NET is not the only way that you can extend FoxPro but it's certainly one of the most common, as it provides deep integrations with many different technologies.
 
-The reason for this is simple: .NET code is relatively simple to create and there's lots of tooling available today to do it. Certainly compared to creating C++ Win32 libraries, .NET code is a walk in the park.
+The reason for this is simple: **.NET compontents are relatively simple to create and consume** compared to C++ or COM, and there's lots of tooling available today to do it. 
 
-It also helps (or hurts :smile:) that .NET, while completely Open Source, is essentially a Microsoft supported product. For Windows it's easily the most popular platform used for integrations of all kinds  Windows OS features themselves as well as for third parties that provide service or feature APIs to integrate with.
+For Windows it's easily the most popular platform used for integrations of all kinds.
 
-There are 1000's of libraries available and .NET includes a prolific package manager repository called [NuGet](https://www.nuget.org/) that makes it easy to integrate libraries downloaded from the Web into your .NET projects.
+There are **thousands of libraries available** and .NET includes a prolific package manager repository called [NuGet](https://www.nuget.org/) that makes it easy to integrate libraries downloaded from the Web into your .NET projects.
 
 Sounds good, but what does that have to do with FoxPro? 
 
-A lot it turns out, because you as a FoxPro developer can relatively easily integrate with .NET either using direct Interop with .NET features via native COM Interop built right into .NET, or via the Open Source [wwDotnet Bridge Library](https://github.com/RickStrahl/wwDotnetBridge) library which provides much enhanced functionality to access .NET code from FoxPro. But even beyond that, .NET is easy enough to pick up to create components that can provide elaborate functionality that would be very tedious to build via the Interop mechanisms available. While possible, it's often easier to build a small custom *wrapper component* in .NET and instead call it from FoxPro, rather than writing the verbose code with FoxPro and Interop functionality.
+A lot it turns out, because you as a FoxPro developer can relatively easily integrate with .NET. .NET includes native COM Interop support which is fairly limited, but there's also an open source [wwDotnet Bridge Library](https://github.com/RickStrahl/wwDotnetBridge) that provides much broader access to .NET features. These technologies let you call .NET from FoxPro relatively easily albeit with a few limitations due to the language feature differences between .NET and COM. 
+
+But even beyond that, .NET is **easy enough to pick up to create your own .NET components**, that can provide elaborate functionality that would be very tedious to build via the Interop mechanisms available. It's often easier to build a small custom *wrapper component* in .NET and instead call it from FoxPro, rather than writing the verbose code with FoxPro and Interop functionality. 
+
+It's also a great way to get your feet wet with .NET. Building small components is one of the easiest ways to get started as you are working with non-visual code typically, and code that generally is very focused and self-contained, which makes for one of the simplest learning environments.
 
 ### Modern .NET is easier than old .NET
-For many, .NET has a stodgy image of a big and unwieldy Microsoft product of the past. But **a lot has changed** in recent years (since about 2015) when Microsoft worked through a major update of the .NET platform. 
+For many, .NET has a stodgy image of a big and unwieldy Microsoft product of the past. But **a lot has changed** in recent years (since about 2015) when Microsoft worked through a major reset of the .NET platform. 
 
-In that update the core .NET runtime was completely overhauled and largely rewritten using many improved and more efficient data constructs all the while largely preserving backwards compatibilityty. The entire .NET eco-system was reviewed and revamped to support among other things:
+In that update the core .NET runtime was completely overhauled and largely rewritten using many improved and more efficient data constructs all the while largely preserving backwards compatibility. The entire .NET eco-system was reviewed and revamped to support among other things:
 
 * cross-platform support on Windows, Mac and Linux for runtime and all tooling
 * focus on high performance runtime improvements  
@@ -61,36 +75,38 @@ In that update the core .NET runtime was completely overhauled and largely rewri
 * a single point SDK to build, test, run .NET code
 * Command line tooling for everything
 * many choices for development tools
- 
-All of this has resulted in many big improvements in the .NET runtime in terms of performance and scalability to the point that .NET is now among the top fastest server interfaces and the fastest among 'integrated platforms' aside from specialty servers.
 
-The improved project system and build tools allowed moving away from the requirement of Visual Studio, which is one of the reasons a lot of people in the past were turned off by .NET. That and Windows only support. Both of these are addressed with cross-platform support not only for the runtime, but also the build tooling which allows building and running apps on Mac and Linux platforms.
+All of this has resulted in many big improvements in the .NET runtime in terms of performance and scalability to the point that .NET is now among the fastest server interfaces overall, and the fastest among 'integrated platforms' aside from specialty servers. The performance improvements from Full Framework to Core are massive.
 
-It's now possible to use any editor, and use command line tooling to build, test and run your projects, or use the openly available OmniSharp tooling that has been integrated in many editor platforms and provides basic syntax and build support out of various editors. In addition there are now dedicated integrated .NET environments  (IDEs) like JetBrains Rider, and Visual Studio for Mac that run on other platforms. However, this is not required - with command line tooling .NET can integrate with any platform and work with any editor you choose or you can simply build and run from the command line.
+More importantly though for the FoxPro use case is the improved project system and build tools that allowed moving away from the requirement of Visual Studio and now uses a much simpler project system that use convention over configuration to provide simpler project files, and much easier defaults to work with. 
 
-In short, it's possible today to do .NET development **on your terms**. Want a lightweight environment and build and test from the command line? You can do that. Want to use your editor of choice with a minimal .NET tooling integration? Yup, you can do that too. Want to still use Visual Studio and get all the rich functionality it provides beyond the basics? Yeah, Microsoft still services the Visual Studio behemoth too. Want to use a powerful cross-platform IDE? [JetBrains Rider](https://www.jetbrains.com/rider/) works on Windows, Mac and Linux and has you covered.
+It's now also possible to use any editor, and use command line tooling to build, test and run your projects, or use the openly available OmniSharp tooling which has been integrated into many popular editors. In addition there are now dedicated integrated .NET environments  (IDEs) like JetBrains Rider, and Visual Studio for Mac that run on other platforms. However, IDEs are no longer required - with command line tooling .NET you can easily build your code with any tool with a few simple commands.
 
-## .NET Framework  or .NET Core
-One of the big changes with 'modern' .NET is that there are now two separate .NET Frameworks:
+In short, it's possible today to do .NET development **on your terms**. Want a lightweight environment and build and test from the command line? You can do that. Want to use your editor of choice with a minimal .NET tooling integration? You can do that too. Want to still use Visual Studio and get all the rich functionality and support tools it provides beyond the basics? Yeah, Microsoft still services the Visual Studio behemoth too. Want to use a powerful cross-platform IDE? [JetBrains Rider](https://www.jetbrains.com/rider/) works on Windows, Mac and Linux and has you covered. Lots of choices!
+
+In this session I'll use VS Code with Command Line Tooling to start and then also show Visual Studio for some specific use cases.
+
+## .NET Framework  or .NET Core?
+The first thing we should probably discuss is, which .NET framework should you use now that .NET has basically two major implementations you can choose from. 
 
 * **Classic .NET Framework** 
-The original .NET Framework that is included with Windows and is Windows specific. It's pre-installed on Windows so it's just there and for this reason is likely the preferred way to build components for use with FoxPro.
+The original .NET Framework is included with the Windows OS and therefore is Windows specific and not cross platform. Because it's pre-installed on Windows, **it's just there** and for this reason is likely the **preferred way to build components for use with FoxPro**.
 
 * **.NET Core**  
-**.NET Core** is new and is a completely separate version of .NET from the old classic **.NET Framework** that is cross-platform and has been heavily optimized for high performance and low resource consumption. 
+**.NET Core** is new and is a completely separate version of .NET from the old classic **.NET Framework**. It is cross-platform and has been heavily optimized for high performance and low resource consumption. It is not pre-installed and requires an explicit Runtime to be installed.
 
-There's a lot of overlap between these two frameworks, and they are highly compatible with each other and both can be used from FoxPro with wwDotnetBridge. The big difference is how they are installed on the local machine.
+There's a lot of overlap between these two frameworks and functionally most code runs interchangeably on either. You can use either from FoxPro with wwDotnetBridge. **The big difference is how they are installed on the local machine.**
 
 Let's take a closer look at the differences between Full Framework and .NET Core.
 
 ### .NET Framework
 The original, Windows only version of .NET - the **.NET Framework** or also known as **.NET FX** - has been part of the Windows platform and is pre-installed since Windows 8. It ships and is updated with Windows, so **it's always pre-installed on practically any Windows machine** post Vista with version 4.5 or later. Since v4.5 .NET Framework hasn't had any major changes other than minor internal improvements, security updates and bug fixes. 
 
-The big advantage of this framework, and why it should be the default choice for components you created specifically for FoxPro, is that it's already installed - no extra installation is required and it just works. 
+The big advantage of this framework, and why it should be the default choice for components you create specifically for FoxPro, is that it's already installed - **no extra installation is required and it just works**. 
 
-The latest version of the .NET Framework is v4.8, which according to Microsoft is the last version of the full .NET Framework. Updates may rev to 4.8.x for bug fixes and security updates, but that's about it. *It's done, put a fork in it!*
+The latest version of the .NET Framework is v4.8, which according to Microsoft is the last version of the full .NET Framework. Updates may rev to 4.8.x for bug fixes and security updates, but that's it. *It's done, put a fork in it!*
 
-This sounds bad, but for many years, most new improvements in .NET in general have come in the form of add-on libraries and extensions that extend the framework rather than changes in the core framework, so this isn't as big of a deal as it sounds. 
+This sounds bad, but for many years, most improvements in .NET in general have come in the form of add-on libraries and extensions that extend the framework rather than in the core framework, so this isn't as big of a deal as it sounds. .NET Framework won't go away, and because it is a Windows component will continue to see updates and security and bug fixes for a long time to come.
 
 In summary .NET Framework is:
 
@@ -98,14 +114,16 @@ In summary .NET Framework is:
 * Includes all Windows features out-of-box
 * Tightly integrated with Windows
 * Doesn't require any runtimes to be installed
-* Versions are synchronized to Windows and fully interoperable
+* Versions are synchronized to Windows and fully inter-operable
 * Version 4.8 is the last version 
 * No longer updated with new features (only patches and security fixes)
 
 ### .NET Core
-Microsoft's latest incarnation of .NET is .NET Core which is a completely re-built version of .NET. This version is no longer tied directly to Windows and all of the Windows specific frameworks and libraries have been externalized from the Core .NET Runtime. Functionally, .NET Core plus the Windows specific libraries provide the vast majority of the Full Framework features, although under the hood things may work differently in more optimized ways.
+Microsoft's latest incarnation of .NET is .NET Core which is a completely re-built version of .NET. This version is no longer tied directly to Windows and all of the Windows specific frameworks and libraries have been externalized from the Core .NET Runtime. If you want to use .NET Core for FoxPro development you need to install the **32 bit .NET Core Desktop Runtime**.
 
-The main goal of Core's revamping was to make .NET cross platform, drastically improve performance, reduce resource usage, and optimize the platform for server operations specifically ASP.NET and micro-services. All this was done with a high level of backwards compatibility so new libraries can easily be dual targeted to run both in .NET Core and Full Framework - and many do.
+Functionally, .NET Core plus the Windows specific libraries provide the vast majority of the Full Framework features minus the Windows features, which have been externalized into Windows specific libraries that can be added back in via NuGet packages.
+
+The main goal of Core's revamping was to make .NET cross platform, drastically improve performance, reduce resource usage, and optimize the platform for server operations specifically ASP.NET and micro-services. All this was done with a high level of backwards compatibility so new libraries can easily be dual targeted to run both in .NET Core and Full Framework - and many do. Functionally there's very little difference between .NET Core and .NET Framework's core features and you can easily move code between the two.
 
 At this point all new improvements to .NET features and performance improvements go only into .NET Core and they aren't back filled to .NET Framework. Even so, the compatibility between these two frameworks - despite the diverging underpinnings - is very high.
 
@@ -117,25 +135,24 @@ In summary .NET Core is:
 * Optimized for heavy server workloads
 * Actively developed
 * Requires one or more Runtimes to be installed
+* For FoxPro you'll want to install the 32 bit .NET Core Desktop Runtime
 * Has many Runtime Versions that may be incompatible with each other
 
-### .NET Core requires Runtime Installations
+#### .NET Core requires Runtime Installations
 For FoxPro developers that want to integrate .NET into their FoxPro Windows applications, the biggest drawback to .NET Core is the requirement for .NET Core Runtimes
 
 **For .NET Core you have to ensure that the correct .NET Core Runtime is installed** on the machine. The runtime installs are not small either and there are potential compatibility issues between major versions of these runtimes which are updating once a year on a schedule. This is less an issue for components that you would create for FoxPro, which can work more easily with mismatched .NET Core versions, but full applications have to carefully track what runtime version is targeted to ensure they can run.
 
 Additionally FoxPro requires the **32 bit version of the .NET Runtime** in order to interop with components. While most .NET components work with both 32 bit and 64 bit code automatically, the initially loaded runtime that FoxPro calls into has to be 32 bit. This means you need to make sure the **32 Bit .NET Core Runtime** is explicitly installed in addition to the more common 64 bit Runtime.
 
-In order to use .NET Core components with FoxPro you **have to use wwDotnetBridge** - there's no direct support for plain COM .NET Interop. wwDotnetBridge recently added the [wwDotnetCoreBridge](https://webconnection.west-wind.com/docs/_5lw0z0590.htm) class which provides the .NET Core interface. It works but requires a little bit of extra setup related to the Runtime dependencies.
+In order to use .NET Core components with FoxPro you **have to use wwDotnetBridge** - there's no direct support for plain COM .NET Interop any longer. `wwDotnetBridge` recently added the [wwDotnetCoreBridge](https://webconnection.west-wind.com/docs/_5lw0z0590.htm) class which provides the .NET Core interface. It works but requires a little bit of extra setup related to the Runtime dependencies.
 
-> For all these reasons I highly recommend that unless you have an explicit need to use .NET Core, stick to targeting the Full Framework.  With the full .NET Framework  you don't have to worry about any installation and it just works. 
-
-For now most .NET components work both in .NET Core and full framework as base functionality of the framework has mostly stayed the same and most components work in either framework.  For your own components however, using Full Framework is simply the easier route to .NET for FoxPro applications.
+> For all these reasons, I highly recommend that unless you have an explicit need to use .NET Core, stick to targeting the Full Framework.  With the full .NET Framework  you don't have to worry about any installation and it just works. 
 
 ### Choices, Choices: Prefer .NET Framework
 The future *for Microsoft and .NET* is clearly in .NET Core, not .NET Framework. If you're building full .NET server applications, there is no reason to build them in classic .NET any longer due to the new service frameworks and massive performance gains in Core. For desktop applications the situation is more varied - you get new language and framework features, all of the performance features but at the downside of having to deal with managing runtime distribution for the .NET Core runtimes and keeping versions up to date.
 
-*For FoxPro the situation is different though, because as an external application calling into .NET, you want the process to be as transparent as possible for the host FoxPro application. Installing an explicit runtime can be a big detriment and often may outweigh the benefit the integration provides.
+However, for FoxPro component integration the situation is different, because as an external application calling into .NET, you want the process to be as transparent as possible for the host FoxPro application. Installing an explicit runtime can be a big detriment and often may outweigh the benefit that the integration provides.
 
 **For this reason I recommend that we continue to prefer the classic .NET Framework (`net472` or `net48`) for targeting any components you create for use with Visual FoxPro rather than .NET Core.**
 
@@ -143,63 +160,60 @@ If you create your own components there's little reason to use .NET Core - you'r
 
 > Unless there's a specific reason that you have to use .NET Core - use .NET Framework.
 
-The only reason you should consider using .NET Core from FoxPro is that you need to call a library that is only available for .NET Core and uses Core specific features. You can actually use a library that is compiled for .NET Core in full framework, as long as it doesn't use features that are not available in full framework. This is not safe - as any failures will then occur at runtime, rather than compile time, but for many scenarios this might actually allow using Core components in Full Framework. If you do make sure you do extensive testing... it's not an officially supported scenario, but yet it works.
-
-.NET Core only libraries are relatively rare today, as most libraries these days either multi-target both .NET Framework and .NET Core or use `.NET Standard 2.0` which is a generic 'api interface' that is supported both by .NET Core and full framework.
-
 Please note, that using FoxPro you can choose to access either .NET Framework using `wwDotnetBridge` (or plain COM Interop), or use `wwDotnetCoreBridge` to use the  .NET Core Runtime, but with the latter you have to make sure the Runtimes are installed.
 
 ## FoxPro and .NET Interop
 So you've decided you need to interop with some .NET Components - how do you do that? There are a couple of options available to the FoxPro developer.
 
-* **.NET COM Interop**  
-.NET supports a native COM interface wrapper that allows **.NET components to be exposed as COM objects**. Unfortunately the native support is **very limited** and requires explicitly registered and marked components which means either you have to use your own components that implement these special markers, or use the very few .NET components that explicitly support COM Interop invocation. COM by itself is also limited in .NET type features it can access, due to limitations in the COM type system compared to .NET's rich type system . For example, you can't call static members, you can't easily access collections and dictionaries, access generic types, and even many simple types like Guids, Decimals or Longs can't be accessed directly.
+* **Native .NET COM Interop**  
+.NET supports a native COM interface wrapper that allows **.NET components to be exposed as COM objects**. Unfortunately the native support is **very limited** and requires explicitly registered and marked components which means either you have to use your own components that implement these special markers, or use the very few .NET components that explicitly support COM Interop invocation. COM by itself is also limited in .NET type features it can access, due to limitations in the COM type system compared to .NET's rich type system . For example, you can't call static members, you can't easily access collections and dictionaries, access generic types, and even many simple types like Guids, Decimals or Longs can't be accessed directly.  *Note: Native COM Activation (COM Interop) is not available in .NET Core*.
 
 * **wwDotnetBridge** (or `wwDotnetCoreBridge`) 
-wwDotnetBridge is an Open Source FoxPro library that provides a proxy interface into .NET. It also uses COM Interop, but uses a different approach to load .NET assemblies and create instances by hosting the .NET Runtime directly. It works around many limitations of COM Interop by providing Proxy functionality inside of .NET that allows accessing features that native COM interaction cannot access directly and passing input from FoxPro to .NET and results from .NET back to FoxPro in a way that each platform can work with. It requires no explicitly registration for components, can access most .NET types directly, and supports common features like access to static members, collections and dictionaries, generic types and many other problem types not supported via native COM access.
+wwDotnetBridge is an Open Source FoxPro library that provides a proxy interface into .NET. It also uses COM Interop, but uses a different approach to load .NET assemblies and create instances by hosting the .NET Runtime. It works around many limitations of native COM Interop by providing direct activation via a Proxy inside of .NET. The proxy allows accessing features that COM interaction cannot access directly, by passing input from FoxPro to .NET and results from .NET back to FoxPro in a way that each platform can work with. It requires no explicitly registration for components, can access most .NET types directly, and supports common features like access to static members, collections and dictionaries, generic types and many other problem types not supported via native COM access.  or some event interfaces).
 
-> Of these two using wwDotnetBridge is almost always the better choice, as it removes the COM registration and COM marked requirement of stock COM Interop. That feature alone is enough to use wwDotnetBridge in my view - once you get the .NET object reference behavior is initially identical to COM Interop. But beyond that wwDotnetBridge then provides proxy functionality to work around COM Interop limitations. Personally I **never** use .NET COM Interop from FoxPro - there's no benefit in its use and no downside for using wwDotnetBridge except for small, two DLL distribution requirement.
+> Of these two using wwDotnetBridge is almost always the better choice, if nothing else than removing the COM registration requirement. Personally I **never** use .NET COM Interop from FoxPro - since you get all the featurs of native COM Interop, plus all the enhancements that wwDotnetBridge Proxy provides. There's no downside for using wwDotnetBridge except for the small, two DLL distribution requirement.
 
 ### Built in COM Interop
 .NET includes a COM based interop mechanism that allows for instantiating and accessing of .NET components via COM. The native COM Interop mechanism allows you to instantiate a .NET component via COM and return it as a COM object reference. .NET includes a COM Callable layer that at runtime turns .NET objects into COM accessible objects. 
 
 But the built-in COM Interop has a catch: It requires that components are explicitly marked for COM Interop and that the components is registered in the registry as a COM component using a special tool called `regAsm`. `regAsm` creates COM entries that add additional .NET specific information in the registry so you can instantiate a .NET Component as a COM object using standard `CREATEOBJECT("ComClass.Class")` syntax. Unfortunately that limits what you can access with this native COM mechanism as almost no native .NET components, or those from third parties are natively exposed as COM objects. Most components lack both the appropriate `[ComVisible]` attributes or the attributes required to allow FoxPro to instantiate these COM compoents. Effectively this limits the native COM Interop features to components that you yourself build with the additional burden of requiring that these components have to be registered and re-registered during installation of the application. In short using COM Interop is messy.
 
-If you are interested there's more detail on how native COM Interop works in the [wwDotnetBridge White Paper](https://west-wind.com/presentations/wwDotnetBridge/wwDotnetBridge.pdf), but we're not covering that here, since it is so limited and cumbersome to install and work with.
+If you are interested there's more detail on how native COM Interop works in the [wwDotnetBridge White Paper](https://west-wind.com/presentations/wwDotnetBridge/wwDotnetBridge.pdf), but we're not covering that here, since it is so cumbersome to install components and has so many limitations.
 
 ### wwDotnetBridge and wwDotnetCoreBridge
-To work around some of these limitations the `wwDotnetBridge` library provides a number of enhancements that allow any object to be instantiated as well as providing a host of helper features that allow you to work around the limitations of COM only access to .NET components.
+To work around some of these limitations  `wwDotnetBridge` provides a number of enhancements:
 
 * Access most .NET components directly
 * No COM registration required for instantiation
 * Support for multiple constructors and constructor with parameters
-* Helpers to access type that can't be passed over COM  
-    * any value type, long, decimal
+* Access to static methods and properties and enums
+* Helpers to access types that can't be passed over COM  
+    * any value type (ie. `long`,`Guid` etc.)
     * collection types and dictionaries
     * anything using .NET Generics
 * Type wrappers for incompatible types
     * ComArray for collections
-    * ComValue for problem types
+    * ComValue for problem types 
 * Automatic Type Conversions 
 
-Like native COM Interop, wwDotnetBridge relies on the same COM callable wrapper in .NET to interact with objects directly. You use a different mechanism to instantiate types indirectly using `.CreateInstance("dotnetnamespace.classname")`, but once you get an instance of a type back, it's the same kind of COM Interop object you get with plain COM Interop. You can directly access any COM compatible methods and properties on these objects, using direct COM Interop.
+Like native COM Interop, wwDotnetBridge relies on the same COM callable wrapper in .NET to interact with objects directly. You use a different mechanism to instantiate types indirectly using `loBridge.CreateInstance("dotnetnamespace.classname")`, but once you get an instance of a type back, it's the same COM type of object you get with plain COM Interop. You can directly access any COM compatible methods and properties on these objects, using direct COM Interop.
 
 The utility of `wwDotnetBridge` comes in when working around the limitations of .NET -> COM communication. COM is an old protocol and it has very strict type rules of what it can and cannot work with and `wwDotnetBridge` can work around many of those in the 'cannot work' category.
 
 `wwDotnetBridge` loads a .NET component into .NET and uses it as Proxy that can access .NET components on behalf of FoxPro and COM and marshal data between the two through an intermediate execution and data translation layer. It basically makes method invocations and property access operations on behalf of FoxPro and converts data types to and from FoxPro in a way that works over COM. Using this mechanism allows getting around most limitations that don't work with COM natively.
 
-What this means that if types support direct COM access you can continue to use direct interaction. When there's a problem with the type conversions or member structure, you can then use `wwDotnetBridge`'s proxy features to work around the problems. 
+> What this means that if types support direct COM access you can continue to use direct COM access. When there's a problem with the type conversions or member structure, you can then use `wwDotnetBridge`'s proxy features to work around the problems. 
 
-Because the proxy component lives in .NET It can access any native .NET functionality and return data in a way that FoxPro can manage. For example, the `Long` .NET datatype isn't supported in COM but `wwDotnetBridge` can intercept a result value of `Long` and convert it into an `int` for a small value or a `double`for a large value both of which FoxPro and COM support. 
+Because the proxy component lives in .NET, it can access any native .NET functionality and return data in a way that FoxPro can manage. For example, the `long` .NET datatype isn't supported via COM, but `wwDotnetBridge` can intercept a result value of `long` and convert it into an `int` for a small value, or a `double` for a large value both of which FoxPro and COM support.
 
-Other problems that `wwDotnetBridge` solves, are that value types or generic types cannot be accessed through COM because they don't have a fixed virtual pointer implementation. `wwDotnetBridge` works around this by using indirect referencing and calling of members using helper methods like `InvokeMethod()`, `GetProperty()` and `SetProperty()` which use **.NET Reflection** inside of the .NET Runtime to make the calls and marshal the result values back to FoxPro. This means that in many cases COM unsupported operations can be executed **inside of .NET** and only the results are marshalled back in a COM compatible way that FoxPro can use.`
+Other problems that `wwDotnetBridge` solves are that value types or generic types cannot be accessed through COM because they don't have a fixed virtual pointer implementation. `wwDotnetBridge` works around this by using indirect referencing and calling of members using helper methods like `InvokeMethod()`, `GetProperty()` and `SetProperty()` which use **.NET Reflection** inside of the .NET Runtime to make the calls and marshal the result values back to FoxPro. This means that in many cases COM unsupported operations can be executed **inside of .NET** and only the results are marshalled back in a COM compatible way that FoxPro can use.`
 
 Finally you can also access static methods and properties with wwDotnetBridge` which are quite common in .NET. Static members are *instance-less operations* - sort of like FoxPro UDFs, but tied to a .NET type. Since static methods don't have an instance there's no way to create a COM instance and call that method - there is no instance. So rather wwDotnetBridge uses Reflection to call the static method or property and marshal the result back to FoxPro.
 
 In a nutshell, `wwDotnetBridge` provides workarounds for many common .NET scenarios that don't directly work with COM Interop. You can still use direct COM access to any method or property that support it, but for those that don't, wwDotnetBridge has workarounds via its proxy mechanism.
 
 ## How wwDotnetBridge works
-So how does this work? Think of `wwDotnetBridge` as a .NET proxy that can marshal data from FoxPro to .NET and from .NET to FoxPro, using structures that can be passed over COM. To do so there are helper methods that indirectly invoke methods, set properties and retrieve values. The proxy knows what is being passed and what the target types are and handles the conversions wherever possible.
+So how does this work? Think of `wwDotnetBridge` as a proxy running inside of .NET that can marshal data to and from FoxPro and .NET, by using data types that can be passed over COM. To do so there are helper methods that indirectly invoke methods, set properties and retrieve values. The proxy knows what is being passed and what the target types are and handles the conversions wherever possible.
 
 There are two main features:
 
@@ -267,10 +281,9 @@ This example demonstrates a few of wwDotnetBridge's features:
 * Loading of a third party library
 * Registrationless instantiation of the builder
 * Direct invocation via COM (`loBuilder.Build()`)
-* Indirect invocation in this case of a static method
+* Calling a static method
 
-
-This example is super simple, but that little bit of code provides powerful functionality as you now have the full power of Markdown parsing in your FoxPro application with just a few lines of code. Small code sample, big feature footprint!
+This example is super simple, but it provides powerful functionality as you now have the full power of Markdown parsing in your FoxPro application with just a few lines of code. Small code sample, big feature footprint!
 
 ### Basic Example: Indirect Invocations
 Let's look at another example that demonstrates more of the indirect invocation of methods and properties with `wwDotnetBridge`. The following code retrieves all the local user TLS Certificates on the machine using .NET built-in system libraries:
@@ -313,25 +326,19 @@ FOR lnX = 0 TO lnCount -1
 ENDFOR
 ```
 
-The comments in this code describe what's happening with the various wwDotnetBridge functions. Notice that this code **does not have an explicit `LoadAssembly()` call** because it only uses features that are part of the core .NET Runtime so no assemblies need to be explicitly loaded. 
+The comments in this code describe what's happening with the various wwDotnetBridge functions. Notice that this code **does not have an explicit `.LoadAssembly()` call** because it only uses features that are part of the base .NET Runtime, so no assemblies need to be explicitly loaded. 
 
-There's a use of `GetEnumValue()` here which can be used to resolve an Enum value by it's type string representation. Enums are common in .NET and this is one way you can retrieve them. 
+There's a use of `.GetEnumValue()` here which can be used to resolve an Enumeration value by it's type name and enum value representation. Enums are common in .NET and this is one way you can retrieve them. 
 
-There are several uses of `GetProperty()` in this code to retrieve properties that aren't directly accessible via COM. First is the Count property on the certificate collection which is a custom collection type that COM does not support. Collections/Lists are not easily accessed or modified directly via COM, so wwDotnetBridge has a [ComArray wrapper class](https://webconnection.west-wind.com/docs/_2mq0jxk83.htm) that allows easy retrieval and updating of arrays while keeping the actual array inside of .NET. In this case though, due to the custom collection used by `loStore.Certificates` that doesn't work and instead this index syntax is used instead.
+There are several uses of `.GetProperty()` in this code to retrieve properties that aren't directly accessible via COM. First is the Count property on the certificate collection which is a custom collection type that COM does not support. Collections/Lists are not easily accessed or modified directly via COM, so wwDotnetBridge has a [ComArray wrapper class](https://webconnection.west-wind.com/docs/_2mq0jxk83.htm) that allows easy retrieval and updating of arrays while keeping the actual array inside of .NET. In this case though, due to the custom collection used by `loStore.Certificates` even that doesn't work and instead this proxy string index syntax with `.GetProperty()` is used instead:
 
 ```foxpro
 loCertificate = loBridge.GetProperty(loStore,"Certificates[" + TRANSFORM(lnX) + "]")
 ```	
 
-The other two uses are shortcuts to access nested properties rather than traversing the object hierarchy and loading the intermediary objects into FoxPro - by using the nesting syntax these objects are directly referenced.
+It's ugly but it works, and it highlights why building code like this from FoxPro can be tricky. It's not always obvious what works and what doesn't in FoxPro code, and it often takes a lot of trial and error to find the right solution which is time consuming. 
 
-Note the 'funky' syntax related to the `X509CertificatesCollection` type. This happens to be a custom .NET collection rather than a a generic array or collection. Turns out this type doesn't convert to a `ComArray` that I would normally use to convert a collection, so it requires this manual index syntax:
-
-```foxpro
-loCertificate = loBridge.GetProperty(loStore,"Certificates[" + TRANSFORM(lnX) + "]")
-```
-
-to retrieve an array item. It's ugly but it works, and it highlights why building code like this from FoxPro can be tricky. It's not always obvious what works and what doesn't in FoxPro code and it often takes a lot of trial and error to find the right solution which is time consuming. If you were to build this code in .NET instead it would be very obvious how to loop through the list using a simple `foreach` operation:
+If you were to build this code in .NET instead, it's very obvious how to loop through the list using a simple `foreach` operation because .NET natively understands the custom collection type:
 
 ```cs
 var store = new X509Store();
@@ -341,40 +348,38 @@ foreach (var cert in store.Certificates)
 }
 ```
 
-IOW, while wwDotnetBridge can handle this scenario just fine, the code that gets written can be verbose and sometimes downright ugly and also very un-obvious, where native .NET code would just work naturally. The more code you have to interact with the more it makes sense to write that interaction using .NET code and expose only the required parts to FoxPro.
+While wwDotnetBridge can handle this scenario just fine, the FoxPro code is verbose and un-obvious, where native .NET code just works naturally. The more code you have to interact with, the more it makes sense to write that interaction using .NET code and expose only the inputs and outputs required by FoxPro rather than the entire process.
 
 ## Creating a Dotnet Component
-Now that you know how to call a .NET component from FoxPro, you're now ready to create your own .NET components that you can call from FoxPro. There's really no difference between what we've done above except that you'll be loading the appropriate assembly(ies) that contain your custom .NET code.
+Now that you know how to call a .NET component from FoxPro, you're now ready to create **your own .NET components** that you can call from FoxPro. There's really no difference between what we've done above except that you'll be loading the appropriate assembly(ies) that contain your custom .NET code.
 
 The next step then is to create a new .NET component. There are many ways to do this and I want to show you a couple of them:
 
 * Using the Command Line Tools and the VS Code Editor
 * Using Visual Studio
 
-Using Visual Studio is considerably easier since it's a guided experience, but I'll start with the command line to demonstrate that you can absolutely build .NET components with nothing more than an editor and the command line tooling. It also helps understanding how .NET works to create executable code from your source code.
+Using Visual Studio is considerably easier since it's a guided experience, but I'll start with the command line because it gives you more insight into how the process actually works and to demonstrate that you can absolutely build .NET components with nothing more than an editor and the command line tooling. 
 
-I'll then transition into Visual Studio to show how you can use more advanced tooling features to do things like debugging and take advantage of the much more complete IntelliSense support in Visual Studio over the basics that you get in a pure editor like VS Code.
+I'll then transition into Visual Studio to demonstrate a few features that are easier in .NET like Debugging and improved language features for writing code than what you get in VS Code. 
 
 ### The raw SDK lets you build, test, run and debug .NET Applications
-Using the new .NET SDK tools you can now create .NET components without requiring a big development environment. You can use the command line tools - or a light weight editor like Visual Studio Code - that supports the generic OmniSharp .NET Build tools to build .NET components or applications.
+Using the new .NET SDK tools you can now create .NET components without requiring a big development environment. You can use the command line tools - or a light weight editor like VS Code - that supports the generic OmniSharp .NET Build tools to build .NET components or applications.
 
-If you're building small, single focus components or a small front end interface to a library that's more easily callable from FoxPro, using the command line tools is all you might need. If you can follow instructions and cut and paste some basic code and XML project templates you can do all of this quite easily using nothing more than the .NET SDK, the command line tooling and any editor of your choice.
+If you're building small, single focus components or a small front end interface to a library that's more easily callable from FoxPro, using the command line tools is all you might need. If you can follow instructions and cut and paste some basic code and XML project templates you can do all of this quite easily using nothing more than the .NET SDK, the command line tooling and an editor of your choice. Use a .NET versed editor like VS Code and you get full syntax highlighting, IntelliSense and even some basic refactoring and code fixes even from 'just an editor'.
 
-If you are already doing .NET development or you planning on building more complex integrations that involve multiple projects and complex logic, there certainly is a big advantage in using a full blown IDE like Visual Studio or JetBrains Rider which provides tons of support features, solid refactoring, code fixes and suggestions etc. that is well worth the big install footprint and beefy machine requirements.
+If you are already doing .NET development, or you planning on building more complex integrations that involve multiple projects and complex logic, there certainly is a big advantage in using a full blown IDE like Visual Studio or Rider which provide tons of support features, debugging and expanded refactoring, code fixes and suggestions etc. that is well worth the big install footprint and beefy machine requirements.
 
 ### Installing the .NET SDK
-If you're going the low level route rather than Visual Studio or Rider, you will need to install the .NET SDK explicitly.  The SDK includes the actual SDK tools as well as the latest runtime for .NET.
+If you're going the low level route rather than Visual Studio or Rider, you will need to **install the .NET SDK explicitly**.  The SDK includes the actual SDK tools as well as the latest runtime for .NET. If you use Visual Studio or Rider, these tools will install the SDK for you as part of their installation.
 
-To do this you need to [install the latest .NET SDK](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks) (download the latest **LTS Release**), which includes all the required tools to build, run and debug .NET applications. The SDK also installs the .NET Core runtime along with the ASP.NET and Windows runtimes. Although you don't need that it's there if you choose later to build a full .NET application. 
+For manual installation you need to [install the latest .NET SDK](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks) (download the latest **LTS Release**), which includes all the required tools to build, run and debug .NET applications. The SDK also installs the .NET Core runtimes (base, ASP.NET Core, desktop, 32bit and 64 bit) along with the ASP.NET and Windows runtimes. Although you don't need that it's there if you choose later to build a full .NET application. 
 
 The base **.NET Core Runtime** which we are interested in for building FoxPro integration components includes:
 
 * Class libraries
 * Console applications
 
-Distributed applications then require the 32 bit .NET Core runtime that is of the same major version (ie. 6.0). The current version of the .NET Core runtime as I write this is `6.0.9`. The minor versions update quite frequently but these runtimes are forwards and backwards compatible to the same major version so as long as a v6.0 runtime is installed it works.
-
-
+Applications that you distribute then require the **32 bit .NET Core Desktop runtime** that is of the same major version (ie. 6.0). The current version of the .NET Core runtime as I write this is `6.0.10`. The minor version updates quite frequently but these runtimes are forward and backwards compatible to the same major version. The SDKs are backwards compatible and you can use a v7 SDK to build v5 application so you typically always install the latest version.
 
 ### Creating a new .NET Project from the Command Line
 So let's create a new .NET component project for .NET Framework using the SDK Tools to start. Let's create new library called `FoxProInterop` which we'll add a few classes to.
@@ -551,13 +556,13 @@ Yay! It works!
 So this works fine, but we'll want to change a couple of things to make it easier to work with the code:
 
 * **Put the Assembly into our FoxPro project location**  
-The DLL path is buried in the build output directory and while that works it's unwieldy. We don't want to copy the file each time we've built, so instead we should build into our FoxPro project folder - or a `/bin` folder below it (if you have a bunch of external DLLs).
+The DLL path is buried in the build output directory and while that works, it's unwieldy. We don't want to copy the file each time we've built the project, so instead we should build directly into our FoxPro project path.
 
 * **Create a Release Build**
 If you look closely at the output path you'll see that it includes the build target and build 'mode' which in this case is `Debug`. For final DLL we'll want to build a `Release` build.
 
 #### Fixing the Output Path
-The first thing I want to change is the build output path so that the compiled DLL gets built into a folder that's accessible for my host FoxPro project. 
+I want to change the build output path so that the compiled DLL gets built into a folder that's accessible for my host FoxPro project so I don't have to copy the file each time I build.
 
 To do this we can add a couple of keys - `<OutputPath>` and `<AppendTargetFrameworkToOutputPath>` - to dump the file where we want it:
 
@@ -569,16 +574,17 @@ To do this we can add a couple of keys - `<OutputPath>` and `<AppendTargetFramew
 	  <TargetFramework>net472</TargetFramework>
 	  
 	  <!-- THESE TWO SETTINGS CONTROL THE OUTPUT PATH -->
-	  <OutputPath>..\..\..\FoxPro\bin</OutputPath>
+	  <OutputPath>..\..\FoxPro\bin</OutputPath>
       <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
 </Project>
 ```
 
-Preferably use a **relative path** for the `OutputPath`, so the location is portable if you move your project. In this case I point back to my FoxPro project which sits as a peer to the .NET project a few folders back in the folder hierarchy. Use any full path or a path that is relative to the project folder.
+Preferably use a **relative path** for the `OutputPath`, so the location is portable if you move your project. In this case I point back to my FoxPro project which sits as a peer to the .NET project a few folders back in the folder hierarchy. Use any full or relative path to the project folder.
 
-Personally, I like to stick .NET assemblies into a separate `\bin` folder below my FoxPro project root, mainly because .NET Projects often have additional dependencies. By using the `\bin` folder and adding that path from the application, it keeps the clutter in the root folder to a minimum.
+> #### Tip: Put .NET Output Assemblies into a separate Folder
+> Personally, I like to stick .NET assemblies into a separate `\bin` folder below my FoxPro project root, mainly because .NET Projects often have additional dependencies. By using the `\bin` folder and adding that path from the application, it keeps the clutter in my root application folder to a minimum and if I need to I can easily nuke all the files in the folder and let the .NET project rebuild them.
 
 Once these changes have been made you can now rebuild your project with:
 
@@ -589,46 +595,58 @@ dotnet build
 and it'll produce the output in the specified `bin` folder.
 
 #### Creating a Release Build
-By default .NET builds a **Debug** build. Debug builds include debug information and don't compile some optimizations. Typically you'll use a Debug build when working on a project, and a **Release** build when you build a final build. 
+By default .NET builds a **Debug** build. Debug builds include debug information and compiles non-optimized code which can be sub-optimal. The compiler optimizes away code that isn't used and does things like inlining small code methods etc. which can improve performance and reduce size on release builds.
 
-For use in FoxPro you'll always want to build a Release build **unless you are explicitlly debugging the code with a Debugger** (more on this later).
+For use in FoxPro you'll always want to build a Release build **unless you are explicitly debugging the code with a Debugger** (more on this later).
 
-To create a Release build we can use the `-c Release` command line switch:
+To create a Release build we can use the `-c Release` switch on `dotnet build`:
 
 ```ps
 dotnet build -c Release
 ```
 
 #### Can't Compile: Locked DLLs
-If you compiled and ran the project, then made a change and tried to recompile, you probably found that you can't, because the DLLs are loaded by your FoxPro application:
+If you compiled and ran the project, then made a change and tried to recompile, you probably found that you can't! That's because the DLLs are loaded by your FoxPro application:
 
 ![](BuildErrorLockedFiles.png)
 
 Once loaded into a host process - your FoxPro application -  the .NET assemblies become locked in memory and **can't be unloaded unless FoxPro (or your standalone application) is shut down**.
 
-In order to rebuild the project, you'll have to quit FoxPro or your application, then build the .NET project, then restart your FoxPro application.
+**In order to rebuild the project, you have to quit FoxPro**, re-build the .NET project, then restart your FoxPro application.
 
-> There's cheat for this behavior, if you use the latest version of Visual Studio, which has support for Hot Reload. This feature allows you to make many changes in .NET code **and continue running the host process**, while code is replaced in the running application. Surprisingly Hot Reload works even when running a .NET component from Visual FoxPro in the Visual Studio Debugger. More on this later.
+> There's cheat for this behavior, if you use the latest version of Visual Studio and **Hot Reload** that allows you to make changes in .NET and keep running without recompilation. More on this later.
 
 #### Compilation Errors
-While we're at let's also talk about compilation errors. Before you can run an application or create output for component you have to have an error free compilation.
+While we're at let's also talk about compilation errors. Before you can run an application you have to have an error free compilation. .NET is a compiled language so the compiler checks for errors. What kind of errors?
 
-.NET is a compiled language so it checks for syntax errors, type mis-assignments, missing values for parameters etc., all **at compile time**. You'll find that compile time error checking easily catches 90% of errors that you're likely to make when writing code.
+* Mis-spelled type or member names
+* Mis-typed parameter or value assignments or return values
+* Code that's missing a return value
+* Invalid syntax
+* Missing brackets
 
-When your code does have errors you can see the compiler output as part of the `dotnet build` command. Here's what this looks like in the terminal in VSCode:
+In addition, the Code Analysis tooling in most editors can catch common code mistakes like:
+
+* Non-assigned variables
+* Null reference errors
+* Non-exiting code
+
+In short the compiler, plus the editor tooling can catch a huge swath of errors before you ever get to running your code - I'd say it's easily 90+% of errors are caught by the compiler.
+
+When you code has errors, the compiler **tells you** after compilation via error messages and warnings. When building via `dotnet build` you'll see errors displayed prominently in red. Here's what this looks like in the terminal in VSCode:
 
 ![](CommandLineCompileError.png)
 
 It gives you an explanation and a line/col number for the code which you can use to catch the error.
 
-The editor also does real-time background compilation of the code you're editing and shows you errors as you are writing your code in the editor, highlighting errors with red squiggles hover pop overs for more information about the error:
+The editor also does real-time background compilation and Code Analysis of the code you're editing and shows you errors and code hints as you are writing your code in the editor, highlighting errors with red squiggles and hover pop overs for more information about the error:
 
 ![](editorErrorHighlighting.png)
 
-This feature comes courtesy of the Omnisharp C# language server, which is a generic component that is used by several editors to provide C# language support. Bigger IDEs like Visual Studio and Rider use different engines that are more sophisticated, but the OmniSharp integration in VS Code is pretty useful and provides many features like error display, basic code navigation and some basic refactorings which is great if you want to stick to a light weight editor solution like VS Code.
+This feature comes courtesy of the OmniSharp C# language server, which is a generic component that is used by several editors to provide C# language support. Bigger IDEs like Visual Studio and Rider have their own language and compiler services engines that are even more sophisticated, but the OmniSharp integration in VS Code is pretty powerful as is. In short, even using a simple editor like VS Code you can now get advanced editor features that used to be reserved to a big IDE like Visual Studio.
 
 ### Adding more Functionality
-Alright back to our code. Assuming you've fixed your code lets add some more functionality.
+Alright back to our code. Assuming you've fixed the errors in your code, lets add some more functionality.
 
 #### Adding Simple Methods
 Let's add a couple of more methods to the `Interop` class that perform some simple math. 
@@ -672,27 +690,30 @@ Running this code you'll find that:
 
 ![](MultiplyFails.png)
 
-So why does the second method fail, while the first one works? The error **Function argument value, type or count is invalid** points to a problem with either a parameter that is being passed to the method or a result value that is passed back. In this case it's the latter because `long` is not supported by COM. COM can't marshal the value so the method call fails.
+#### Type Failure Errors and wwDotnetBridge
+So why does the second method fail, while the first one works? 
+
+The error **Function argument value, type or count is invalid** points to a **typing problem** with either a parameter that is being passed into the method or the type of the result value that is passed back. In this case it's the latter, because `long` is not supported by COM. COM can't marshal the value so the method call fails.
 
 As a general rule: If a method call fails with one of these two errors:
 
 * **Function argument value, type or count is invalid**  
-This usually means the result type can't be passed back to FoxPro via COM.
+There's an error with the types being passed in or returned to the method. 
 
 * **No such Interface supported**  
-This means that .NET couldn't find a method or property that matches the signature of the function. This is often caused by passing parameter types that don't match or calling a method that can't be converted.
+This means that .NET couldn't find a method or property that matches the signature of the function. This can mean you're calling a method or property that doesn't exist, but can also mean that the parameters you are passing or value you set is not the correct type that .NET expects. .NET methods need the **exact type match** in order to work. Sometimes this gets tricky due to the way COM translates types from FoxPro to COM types and to .NET types.
 
-try using `InvokeMethod()`, `GetProperty()` or `SetProperty()` to indirectly access the method and pass parameters.
-
-You can fix this by using **wwDotnetBridge** to **indirectly call the method** by proxying the call through .NET.
+When you run into these errors and you're sure you've got the method or property signature correct, try using `InvokeMethod()`, `GetProperty()` or `SetProperty()` instead of the direct COM call. In the example above `long` return value, you can fix the issue by using **wwDotnetBridge** and `loBridge.InvokeMethod()`:
 
 ```foxpro
-* ? loInterop.Multiply(20.10, 10.10)
+* ? loInterop.Multiply(20, 10)
 lnResult = loBridge.InvokeMethod(loInterop, "Multiply", 20, 10)
 ? lnResult     && 200
 ```
 
-and voila that now works.
+and voila that now works. `wwDotnetBridge` proxies the method call **inside of .NET**, captures the `long` result value, and returns to your calling code either an integer for int sized results, or a double for larger values.
+
+> When direct COM access to methods or properties fail, **always try using wwDotnetBridge indirect calls using `InvokeMethod()`, `GetProperty()` or `SetProperty()`** to see if that works instead. 
 
 #### Passing Complex Objects between .NET and FoxPro
 Next let's add a couple of classes to demonstrate passing complex object back and forth. Let's start with two more methods for the `Interop` class that get a `Person` object, and allow passing one to .NET:
@@ -711,7 +732,9 @@ public bool SetPerson(Person person)
 }
 ```
 
-Then we can add two classes like this - either at the bottom of the `Interop.cs` file or in a separate `Person.cs` file. I'll use the latter:
+Then we create a `Person` class that has a secondary, nested `Address` class. Add this either at the bottom of the `Interop.cs` file after the `Interop` class definition, or in a separate `Person.cs` file. The compiler automatically detects and compiles the new class file.
+
+I'll use the separate `Person.cs` file:
 
 ```csharp
 using System.Collections.Generic;
@@ -722,9 +745,11 @@ namespace FoxProInterop
     {
         public Person()
         {
+            // create a couple of sample addresses - first default
             var addr = new Address();
             Addresses.Add(addr);
 
+            // second customized
             addr = new Address()
             {
                 Street = "111 Somewhere Lane",
@@ -789,7 +814,8 @@ loPerson = loDotnet.GetPerson()
 ? loPerson.Name
 ? loPerson.Company
 
-*** 2. Retrieve using a ComArray Wrapper object
+*** 2. Retrieve using a ComArray Wrapper object that copies to an internal array
+*** Note: Because this is List<Address> there are limitations on updates (more in PersonUpdate2)
 loAddresses = loBridge.GetProperty(loPerson, "Addresses")
 
 FOR lnX = 0 TO loAddresses.Count-1
@@ -819,9 +845,20 @@ Now let's call the `SetPerson(person)` method that passes a Person object from F
 This means you cannot create an object to pass to .NET in FoxPro code **even if it has the same property names as a type you are passing**. Types have a unique signature in .NET and it has to be **the exact same type** that is specified which means you have to create the type **in .NET**.  The only way a FoxPro object can be passed to .NET is as a **non-typed object** either as type `object` (which requires Reflection) or `dynamic` which allows dynamic member access similar to the way FoxPro allows COM objects to be accessed.
 
 * **Generic Lists/IEnumerables (ie. `List<Person>`) can be tricky**  
-The `Person` class has a `List<Person>` property and these types are not directly COM accessible. They also don't work for writing via `ComArray` so special syntax is needed to access generic lists and collections using `InvokeMethod()` to manipulate the collections.
+The `Person` class has a `List<Person>` property and these types are not directly COM accessible. They also don't work for list manipulation (Add,Remove,Clear) via `ComArray`, so special syntax is needed to Add new items by using `InvokeMethod()`.
 
-The following code addresses both these scenarios.
+The following example demonstrates. It does the following:
+
+* Creates a new Person object
+* Sets simple properties
+* Creates a new Address Object
+* Sets Address properties
+* Adds the Address the Person.Addresses list
+* Passes the Person object to .NET
+* .NET sets the DefaultPerson property with the passed value
+* FoxPro then retrieves DefaultPerson and Echos values
+
+Here's the code.
 
 ```foxpro
 loBridge = GetwwDotnetBridge()
@@ -846,18 +883,17 @@ loAddress.Street = "321 Somewhere Lane"
 loAddress.City = "Somewhere"
 loAddress.PostalCode = "44444"
 
-*** Access the generic type (ComArray) - this doesn't work for updates!
+*** Access the generic type (ComArray) - this doesn't work for list manipulation (Add, Clear, Remove)
 * loAddresses = loBridge.GetProperty(loPerson,"Addresses")
 
-*** Use indirect syntax - required because .NET Generic (List<Address>)
-loBridge.InvokeMethod(loPerson, "Addresses.Clear")            && clear existing
-loBridge.InvokeMethod(loPerson, "Addresses.Add", loAddress)   && add our item
-
+*** Instead use indirect syntax - required because .NET Generic (List<Address>)
+loBridge.InvokeMethod(loPerson, "Addresses.Clear")            && clear existing items (count: 0)
+loBridge.InvokeMethod(loPerson, "Addresses.Add", loAddress)   && add our item  (count: 1)
 
 *** Access the list get back a ComArray
 loAddresses = loBridge.GetProperty(loPerson,"Addresses")
 
-*** Now push that to .NET
+*** Now push that to .NET - sets loDotnet.DefaultPerson
 ? loDotnet.SetPerson(loPerson)
 
 
@@ -870,6 +906,7 @@ loPerson2 = loDotnet.DefaultPerson
 ? loPerson2.Company
 ? loPerson2.Email
 
+*** Get ComArray since we're only reading the list this works fine
 loAddresses = loBridge.GetProperty(loPerson2,"Addresses")
 
 FOR lnX = 0 TO loAddresses.Count -1
@@ -902,10 +939,13 @@ loBridge.InvokeMethod(loPerson, "Addresses.Clear")            && clear existing
 loBridge.InvokeMethod(loPerson, "Addresses.Add", loAddress)   && add our item
 ```
 
-All of this works and gives you an idea how you can deal with Complex objects.
+All of this works and gives you an idea how you can deal with Complex objects. 
 
+I realize, some of this is not exactly obvious, especially the part about dealing with the `List<Person>` in this example. But that's the unfortunate reality of the type mismatched behavior of COM vs. .NET and what is possible. `wwDotnetBridge` provides the tools to let you access these features, but it's not always easy to discover the best way to do so - it takes experience and some trial and error to arrive at the right solution.
 
 #### Adding a Third Party Library from a NuGet Package
+So far we've stuck to code that's part of the .NET framework itself and we've not needed to pull in third party code. It's easy to do that however, using the NuGet package manager.
+
 NuGet is a component package manager that allows you to easily add third party libraries to your application. A **NuGet Package** is a Web stored package that contains the required binary files for a given library and the package may itself reference other NuGet packages as a dependency. The end result is that it's a way to quickly add third party libraries to your projects with a single command.
 
 For this next example, I'll add a Markdown Parsing library called `MarkDig` to our project and we'll use it to create a quick and dirty Markdown parser that you can call from FoxPro.
@@ -940,12 +980,16 @@ This adds the package to the project and you can now use any of MarkDigs feature
 </Project>
 ```
 
+> You can directly enter NuGet packages into the project file using the appropriate syntax - there's no need to run `dotnet add package` if you know the name of the package and the version you want to load.
+
 #### Creating Static Methods
 To demonstrate Markdig let's use another useful example by creating a static method to do the Markdown conversion.
 
-Static methods are 'instance-less' methods which means they can be invoked without first instantiating a class or an object reference. Instead the method is invoked *on a type*. And so we can add a static method to the `Interop` class we've already used.
+Static methods are 'instance-less' methods which means they can be invoked without first instantiating a class or an object reference. Instead the method is invoked *on a type*. Static methods and properties are global - if you set a static property the value is visible for the entire duration of the application to all threads. In FoxPro terms it's similar to creating a custom **UDF function**, or a `PUBLIC` variable for static properties.
 
-To do this add a static method  this to the existing `Interop` class: 
+Static methods are great for fully self contained operations that don't have any state that needs to be carried between operations. Static Properties can be used as global settings that apply throughout the entire application, or as a simple caching mechanism where you create a value once and then reuse it.
+
+In our sample component,  we can add a static method to the `Interop` class:
 
 ```cs
 public static string ToHtml(string markdownText)
@@ -956,11 +1000,10 @@ public static string ToHtml(string markdownText)
 }
 ```
 
-To call this from FoxPro looks like this:
+Compile it again, then call it from FoxPro looks like this:
 
 ```foxpro
 loBridge = GetwwDotnetBridge()
-
 ? loBridge.LoadAssembly("FoxProInterop.dll")
 
 TEXT TO lcMarkdown NOSHOW
@@ -1002,9 +1045,9 @@ This produces HTML output like this:
 
 This works fine and as you can see you can make short work of using the static method in an existing class. In fact, this is a good approach for utility libraries that bunch together a bunch of useful commands.
 
-However a slightly better approach is to move static methods into more logical units. If you have multiple operations that can be grouped together, or if you have a static method that might need additional setup and configuration that stores other static content, it's often a good idea to give even a single static method its own dedicated class.
+However, a slightly better approach is to move static methods into more logical units. If you have multiple operations that can be grouped together, or if you have a static method that might need additional setup and configuration that stores other static content, it's often a good idea to give even a single static method its own dedicated class.
 
-Let's refactor the .NET code into its own class like this:
+Let's refactor the .NET code into its own `Markdown` class like this:
 
 ```csharp
 using Markdig;
@@ -1013,8 +1056,10 @@ namespace FoxProInterop
 {
     public class Markdown
     {
-        private static MarkdownPipeline pipeline { get; set; }
+        // cached pipeline
+        private static MarkdownPipeline Pipeline { get; set; }
 
+        // static constructor runs EXACTLY ONCE on first access of a static member
         static Markdown()
         {
             var builder = new MarkdownPipelineBuilder()
@@ -1022,55 +1067,73 @@ namespace FoxProInterop
             .UseDiagrams()
             .UseGenericAttributes();
         
-            pipeline = builder.Build();
+            // create and cache the pipeline
+            Pipeline = builder.Build();
         }
 
         public static string ToHtml(string markdownText)
         {   
-            return Markdig.Markdown.ToHtml(markdownText, pipeline, null);
+            return Markdig.Markdown.ToHtml(markdownText, Pipeline, null);
         }
     }
 }
 ```
 
-To call this from FoxPro is pretty much identical than before just with a different static type signature:
+Note that I also added a `Pipeline` static property that is used to cache the Markdown configuration pipeline in the `static` constructor of the class. This creates an instance of the pipeline exactly once, the very first time any static member is accessed and then keeps the instance cached. Subsequent calls to `ToHtml()` then reuse this cached instance saving the overhead of repeatedly creating this pipeline instance. 
+
+So then to call to `InvokeStaticMethod()` is the same as before, except we have to change the class name to `FoxProInterop.Markdown`:
 
 ```foxpro
 lcHtml = loBridge.InvokeStaticMethod("FoxProInterop.Markdown", "ToHtml", lcMarkdown)
 ```
-
-Alright, I think you get the idea - static methods are one of the simplest way to expose functionality in .NET and call it from FoxPro as you don't need to instantiate a type first and you can pass one or more parameters into these methods.
-
 > Just as an aside when creating methods in .NET: Don't create methods with huge parameter lists because that gets unwieldy when calling from FoxPro especially if you need to use `InvokeMethod()`. Rather opt for creating **parameter objects** that are specifically designed to have properties for the settings required for the method to run. This makes it easier to set many values in a more predictable way and also allows for creating default values.
 
 Although all of these examples are very simple, they give you a pretty good idea of quite a few of the things that you can quite easily do with .NET **with very little effort**. Calling this code from FoxPro can be very easy to do.
 
 ## Writing Code: IntelliSense, Errors,  Debugging and Type Discovery
+One of the nice features of .NET is that it has rich type inference support, meaning that it can provide deep insight into classes, interfaces, methods and properties **as you are writing your code**, providing rich IntelliSense, Code Hints and also compiler warnings and errors. All this lets you find many problems long before you actually run your code.
+
+Let's look at some of the features that help writing code and fixing errors.
+
+
 
 ### IntelliSense
-One of the nice features of .NET is that it has rich type inference support, meaning that it can provide deep insight into classes, interfaces, methods and properties as you are writing your code, providing rich IntelliSense.
-
-This is one of the main reasons why you want to use .NET rather than FoxPro code to write even slightly complex code, because it's much easier to figure out what is available then trying to guess in FoxPro code, or even use a type discovery tool that is static. The fact that you can simply start writing code and use IntelliSense to figure out what's available is very powerful.
+IntelliSense support is one of the main reasons why you want to use .NET rather than FoxPro code to write even slightly complex code, because it's much easier to figure out what functionality is available than trying to guess at it in FoxPro code. FoxPro can't use .NET IntelliSense so you have to rely on documentation or a decompilation tool like Reflector, ILSpy to figure out what is available. It's much easier to do this in .NET as you can literally **walk the hierarchy** using IntelliSense.
 
 Full featured IDEs like Visual Studio and Rider had this functionality forever, but now with the generic Omnisharp Language service that can and has been plugged into many editors you can now also get this functionality in a simpler editor like VS Code.
 
+We can use it for code navigation by starting at a namespace, drilling into classes from there:
 
+![](IntelliSenseDrillIn.png)
 
+You get member lookups at the class level:
+
+![](IntelliSense.png)
+
+And inline information about each member. Here I'm hovering over the method and it gives me detailed parameter information, all the overloads as well as the XML documentation for the method:
+
+![](IntelliSenseMethodDisplay.png)
+
+IntelliSense alone is worth to consider using .NET to write your code if your code is even slight complicated or lengthy.
+
+> Even if you plan on not building a .NET component, but using wwDotnetBridge to directly access functionality, I would highly recommend you write out your code in .NET first to a) make sure it works as expected and b) to make sure you figure out all the write types for the code. Tools like LinqPad or a Test Project (discussed later) help with this.
 
 ### Compilation Error Display 
-We briefly touched on error display earlier: .NET is a compiled language system, which means code has to be compiled and checked for validity before it can be run. Compilation is pretty painless these days even if you use low level tools and the command line as you can just use:
+We briefly touched on error display earlier: .NET is a compiled language system, which means code has to be compiled and checked for validity before it can be run. Compilation is easy via Command Line:
 
 ```cs
 dotnet build -c Release
 ```
 
-to compile your .NET component. If there are errors the compiler displays the errors in red in the compiler output of the command:
+or by using Build from your IDE of choice.
+
+The compiler is the ultimate debugging tool: It tells you write away were you screwed up your code :smile: If there are errors the compiler displays the errors in red in the compiler output of the command:
 
 ![](CommandLineCompileError.png)
 
 From there you can find the line number of the error and start fixing your code. 
 
-The compiler also runs in the background in VS Code, Visual Studio, Rider and other tools and shows you errors right as you type and highlights errors with Red Squiggles:
+The compiler also runs in the background in VS Code, Visual Studio, Rider and other tools and shows you errors right **as you type** and highlights errors with Red Squiggles:
 
 ![](editorErrorHighlighting.png)
 
@@ -1079,13 +1142,13 @@ You can hover over the error and see more information.
 Error detection at compile time is very useful as it makes sure at minimum that your code is semantically correct. It also helps if you are making changes to code, or are refactoring in ensuring that code that may be indirectly affected and breaks, breaks at compile time rather than at runtime.
 
 ### Editor Refactoring, Code Hints and More for Code Discovery
-The rest of the topics in this section deal with Code discovery in some form
+The rest of the topics in this section deal with Code discovery.
 
-Even VS Code which is about as low level as you can get for C# language support, features a number of editor tools to help with common tasks. It provides code hints for possible code improvements, suggestions for incomplete code, and options to Refactor code for you for many things. VS Code's support for these things is fairly minimal, and if you use a full IDE like Visual Studio or Rider you get many more built-in Refactorings and Code hints that help with code. But again, for minimal code support even these base features are pretty nice in VS Code.
+Even VS Code which is a low level editor compared to an IDE like Visual Studio, provides a lot of nice functionality to help you find problems in your code, refactor common scenarios, and provide you with some coding hints to improve your code.
 
 ![](CodeHintsVsCode.png)
 
-This useful hint lets you turn a C# string + expression value into a single interpolated string (`$". Time is: {name}"` instead of `"Time is: " + name`) which is a common refactoring.
+This useful hint lets you turn a C# string + expression value into a single interpolated string (`$". Time is: {name}"` instead of `"Time is: " + name`) which is a common refactoring and one I use a lot because typing the `$` and `{}` is actually slower, but this syntax is easier to read.
 
 The context menu also has a number of options and shortcut keys:
 
@@ -1095,8 +1158,10 @@ One particular useful one is the **Go to Definition** (`F12`) code navigation th
 
 ![](PeekDefinition.png)
 
+These are little things, but they can save a lot of time and are a great learning tool when you get started.
+
 ## Visual Studio
-So far we've stuck with the simple VS Code editor which is a fast and flexible code editor. It works pretty well for what we've been doing so far and if all you are doing is to build a small component with a few methods to be called from FoxPro VS Code is probably all you need.
+So far we've stuck with the simple VS Code editor, which is a fast, relatively lightweight and flexible code editor. It works pretty well for what we've been doing so far and if all you are doing is to build a small component with a few methods to be called from FoxPro VS Code is probably all you need.
 
 However, if you are planning on writing a lot of .NET code, and doing a lot of debugging, I think you will find it useful to use a full IDE like Visual Studio or Rider, even if it means installing behemoth of an application.
   
@@ -1104,7 +1169,9 @@ Visual Studio Community Edition is free and includes all of the features that yo
 
 * [Visual Studio Community Edition](https://visualstudio.microsoft.com/vs/community/)
 
-Debugging of .NET code in particular is something **that is not easily done without an IDE like Visual Studio or Rider**. But Visual Studio and Rider also provide many more helpful code tools for Refactorings, Code Completions, IntelliCode (AI code completion which is surprisingly good!), enhanced code navigation, advanced tool windows to track and rearrange class code, show associations and much more. For serious developers that do a lot of .NET work, it's well worth to use a full IDE.
+There are also still paid version of VS, but for typical .NET development tasks there's no need for these higher end versions.
+
+One of the reasons to consider Visual Studio is for debugging as that **that is not easily done without an IDE like Visual Studio or Rider**. But Visual Studio and Rider also provide many more helpful code tools for Refactorings, Code Completions, IntelliCode (AI code completion which is surprisingly good!), enhanced code navigation, advanced tool windows to track and rearrange class code, show associations and much more. For serious developers that do a lot of .NET work, it's well worth to use a full IDE.
 
 As to Visual Studio it's not quite the behemoth it used to be. These days it has a Web based installer that's somewhat streamlined and lets you pick just the workloads that you want to install instead of the entire kitchen sink:
 
@@ -1122,24 +1189,21 @@ So lets do this. We'll start by opening our project in Visual Studio.
 
 ![](ProjectInVisualStudio.png)
 
-
 > #### Visual Studio Solutions
 > Note that Visual Studio works with a **Solution** which is top level container for one or more projects. So a `.sln` file can references multiple `.csproj` (or other) Projects. Once you've opened the project, Visual Studio wants to save a Solution file (ie. `FoxInterop.sln`) so do that when asked. You can name it the same as your main project and store at the project root. Typically you'll launch your project via the Solution file.
 >
 > Solutions tie together multiple projects that go together, for example a component and a related Test project, or a Web application, its business object library and test projects.
 
-Once the project is loaded, you can **Build** the project in Visual Studio using the Build menu, context shortcut, or the default `Ctrl-Shift-B` command which builds all projects in the Solution. This builds the project and shows the build result  on the status bar, or - if errors occur as shown -  shows an error list in the **Errors Tool Window** on the bottom. If you have errors you can click the, and VS navigates to the offending line in the code.
+Once the project is loaded, you can **Build** the project in Visual Studio using the Build menu, context shortcut, or the default `Ctrl-Shift-B` command which builds all projects in the Solution. This builds the project and shows the build result  on the status bar, or - if errors occur as shown -  shows an error list in the **Errors Tool Window** on the bottom. If you have errors you can click the error and VS navigates to the offending line in the code.
 
-Most of this is simply a nicer user interface - you can do these tasks in VS Code as well, but here the UI lets you click a button or use a hotkey, rather than using an explicit command line command - which BTW you can still do even if you are using Visual Studio.
+Most of this is simply a nicer user interface - you can do these tasks in VS Code as well, but here the UI lets you click a button or use a hotkey, rather than using an explicit command line command and parsing a console error message and navigating to the right file and line number.
 
 ### Debugging your .NET Project from FoxPro
-So far, so convenient; UI features are nice, but not essential. 
+So far, so convenient; UI features are nice, but not essential and if your project is small, Visual Studio sure seems like overkill.
 
 But the **key feature of Visual Studio for FoxPro .NET Interop is debugging** because there's really no other easy way to do runtime debugging of .NET components. 
 
-You may be able to get away without debugging for your .NET components, by just using error handling and error properties to communicate error information, and that might be enough.
-  
-But if you want to do runtime Debugging, set breakpoints, step through .NET code and examine live objects and variable and so on, then Visual Studio is the only reasonable choice.
+If you want to do runtime Debugging, set breakpoints, step through .NET code and examine live objects and variable and so on, then Visual Studio is the only reasonable choice.
 
 So lets debug our .NET Component doing the following:
 
@@ -1179,6 +1243,7 @@ To set up debugging with the UI tool:
 This ends up producing a `\Properties\launchprofile.json` in the project that looks like this:
 
 ```json
+// Properties/launchprofiles.json
 {
   "profiles": {
     "FoxProInterop Debugging": {
@@ -1189,8 +1254,6 @@ This ends up producing a `\Properties\launchprofile.json` in the project that lo
   }
 }
 ```
-
-> Personally I just edit the launchprofile manually which is quicker than the user interface. The key feature here is `commandName: "Executable"` - the default is `Project` which tries to run the compiled assembly which doesn't work here since we create a library rather than a startable application.
 
 To start debugging now:
 
@@ -1204,12 +1267,12 @@ To start debugging now:
 
 You can now step through your code, inspect local variables, any explicit watches you've set up, make changes to values, jump through the call stack etc. You can also use the **Intermediate Window** to evaluate any expression - calling methods or get property values etc.
 
-The execution point can be moved around in many scenarios by simply dragging it to a new location. This doesn't work for everything - some scenarios that code couldn't naturally reach are not allowed but you can easily re-run code that you to examine again to understand what happened (yeah I do this a lot! :smile:).
+The execution pointer (the yellow arrow) can be moved around in many scenarios by simply dragging it to a new location. This doesn't work for everything - some scenarios that code couldn't naturally reach are not allowed but you can easily re-run code that you to examine again to understand what happened (yeah I do this a lot! :smile:).
 
 #### Hot Reload in the Debugger
-A very new feature in Visual Studio 2022 is the ability to make code changes in **running code** and apply those changes, without restarting the entire application. Again this feature doesn't work for everything - some changes that change the signature of called functions or members can't be recompiled in place - but a lot of small changes can actually be made without recompiling the code. This means you can start the debugger and almost interactively build your code in .NET while you simply re-run your code.
+A new feature in Visual Studio 2022 is the ability to make code changes in **running code** and apply those changes, without restarting the entire application. This feature doesn't work for everything - some changes that change the signature of called functions or members can't be recompiled in place - but a lot of changes can be made without recompiling the code. This means you can start the debugger and almost interactively build your .NET code while you simply re-run your code from FoxPro.
 
-This is especially useful for COM Interop because remember that .NET assemblies once loaded lock the DLL they're housed in, and cannot be unloaded directly - this saves you the many steps of stopping the FoxPro app, going back into Visual Studio, compiling and then re-running the application and starting it back up.
+This is especially useful for COM Interop, because it saves from having to shut down FoxPro to unload the .NET assembly, re-compiling and then restarting. It can be a huge time saver. Combine that with the ability to move the execution pointer in the debugger and you can make incremental changes very rapidly interactively!
 
 For a simple example of this run the `HelloWorld.prg` to load the application. Then go into Visual Studio and change the following from:
 
@@ -1237,7 +1300,7 @@ Just keep in mind that some changes won't allow for this to work and the editor 
 
 In this case I added a parameter to a method which changes signature and that breaks hot reload. 
 
-Even with these limitations this feature is incredibly useful and can help cut down on the time it takes to figure out how to get code running as you can rapidly iterate the .NET code.
+Even with these limitations, this feature is incredibly useful and can help cut down on the time it takes to figure out how to get code running as you can rapidly iterate the .NET code.
 
 ## Discovering .NET Functionality
 One of the things you'll find yourself doing a lot of when you're using .NET is trying to discover functionality of components. There are thousands of components available but quite a lot of them are not extensively documented so code discovery is very important. 
@@ -1247,7 +1310,7 @@ There are many tools both native and external that can help with finding out wha
 ### IntelliSense
 The most obvious tool is IntelliSense which you end up using no matter what tool you use to edit .NET code short of Notepad. Any editor that has basic C# support likely has some support for IntelliSense that provides deep type discovery as you access functionality.
 
-IntelliSense triggers on typing a `.` in the editor, both in VS Code and Visual Studio. Additionaly code hints and behaviors are accessible via `alt-.`.
+IntelliSense triggers on typing a `.` in the editor, both in VS Code and Visual Studio. Additionally code hints and behaviors are accessible via `alt-.`.
 
 Here's plain IntelliSense in VS Code:
 
@@ -1264,7 +1327,7 @@ One trick to discover additional types is to start typing the top level namespac
 ![](IntelliSenseDrillIn.png)
 
 ### Using a Decompiler Tool
-IntelliSense works as long as you have some idea what you're looking form. If you have no documentation or you just need to see the entire library from a high level to discover base types, you can use a Decompiler tool that allows you to deconstruct libraries by showing you all .NET types and their members.
+IntelliSense works as long as you have some idea what you're looking for. If you have no documentation or you just need to see the entire library from a high level to discover base types, you can use a Decompiler tool that allows you to deconstruct libraries by showing you all .NET types and their members.
 
 There are a number of tools that can help you with this:
 
@@ -1273,7 +1336,7 @@ There are a number of tools that can help you with this:
 * JustDecompile (Telerik - free)
 * IL Spy (open source)
 
-I've included a copy of pre-v6 Reflector that you can play around with in the samples' `\Tools\ReflectorV6` folder.
+I've included a copy of pre-v6 Reflector that you can play around with in the samples' `\Tools\ReflectorV6` folder. Open reflector and then drag a .NET DLL into it.
 
 To give you an idea, here is our sample `FoxProInterop.dll` displayed in Reflector:
 
@@ -1886,23 +1949,20 @@ SOAP Web Services can be imported in .NET via Windows Communication Foundation (
 
 All of these examples (and many more) involve creating a .NET component that exposes base functionality that is then accessed by FoxPro. The wrapper simplifies the .NET libraries or interfaces and exposes only a relevant subset with much of the heavy processing handled in .NET and FoxPro only picking up the final results.
 
+
+
 ## Summary
-Phew - a lot covered in this article!
+There are a million and one use cases that can be covered by the .NET integration in FoxPro. The thing is that once you get a whiff of what's possible - well the possibilities are endless. I think what you'll also find while it might be hard to get motivated to create your first component in .NET, once you've created one, creating the next one is very quick and easy because all the initial hookup - setting up the .NET project, setting up wwDotnetBridge is already in place. After that it's just a matter of adding more code to your .NET library that you already have and calling it from FoxPro. It quickly becomes viral.
 
-.NET provides a great way to extend the functionality of FoxPro beyond FoxPro's base features. These days .NET provides the most common extensibility framework for Windows components from Microsoft, as well as many third party integration and tools. The main reason .NET is well suited to this is because it's relatively easy to integrate with from FoxPro through it's COM capabilities. With the features of wwDotnetBridge you can access most .NET features relatively easily from FoxPro.
+And the beauty of it is that you can move as fast or as slow as you like because at the end of the day .NET is an **extension technology** to your existing FoxPro application. Nothing needs to change in your main app you're just adding functionality incrementally.
 
-The goal of this paper has been to give you an introduction to integrating .NET into FoxPro with focus of creating custom .NET components that provide an interface layer for your FoxPro code to simplify interacting with .NET code from FoxPro. We've seen several ways that you can accomplish that:
+I've worked with a lot of customers who started slowly with .NET integration and very quickly realized many more opportunities for integration code as well as extending functionality of their own internal code into .NET.
 
-* Using plain COM Interop from FoxPro
-* Using wwDotnetBridge from FoxPro
-* Creating custom .NET Components and interact with those using wwDotnetBridge
+The goal of this paper has been to give you an introduction to integrating .NET into FoxPro with focus of creating custom .NET components that provide an interface layer for your FoxPro code to simplify interacting with .NET code from FoxPro. We've seen several ways that you can accomplish that.
 
-I hope this paper has given you a good idea of what's involved in doing that using both the new low impact SDK tooling that allow you compile .NET from the terminal without any special tooling, or by using a traditional IDE like Visual Studio or Rider to create your .NET components. We've seen how to build components in a FoxPro friendly way to help ease the COM interface that's used for communication between FoxPro and .NET.
-
-I know this type of integration has completely changed how I build many FoxPro application, with the ability to offload more and more functionality to .NET. I hope this session and paper give you some inspiration to integrate some of your own components using .NET as well.
+I know this type of integration has completely changed how I build many FoxPro applications, with the ability to offload a good chunk of functionality to .NET. I hope this session and paper give you some inspiration to integrate some of your own components using .NET as well.
   
 Onwards and upwards.
-
 
 ## Resources
 * [.NET SDK Downloads (for development)](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)

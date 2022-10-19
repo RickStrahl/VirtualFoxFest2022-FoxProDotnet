@@ -18,20 +18,27 @@ loPerson.Name = "Rick Strahl New"
 loPerson.Company = "Easter Egg"
 loPerson.Email = "test@easteregg.com"
 
-*** Create a new Address instance
-loAddresses = loBridge.GetProperty(loPerson,"Addresses")
+
 loAddress = loBridge.CreateInstance("FoxProInterop.Address")
 loAddress.Street = "321 Somewhere Lane"
 loAddress.City = "Somewhere"
 loAddress.PostalCode = "44444"
 
-*** Use indirect syntax - required because .NET Generic (List<Address>)
+
+*** Use indirect syntax - required because .NET Generic (List<Address>) 
+*** COMARRAY doesn't work for adding, removing, clearing items
 loBridge.InvokeMethod(loPerson, "Addresses.Clear")  
 loBridge.InvokeMethod(loPerson, "Addresses.Add", loAddress)
 
+loAddress = loBridge.CreateInstance("FoxProInterop.Address")
+loAddress.Street = "111 Nowhere Else ane"
+loAddress.City = "Anytown"
+loAddress.PostalCode = "99999"
+loBridge.InvokeMethod(loPerson, "Addresses.Add", loAddress)
+
+
 *** Access the list get back a ComArray
 loAddresses = loBridge.GetProperty(loPerson,"Addresses")
-
 
 *** Now push that to .NET
 ? loDotnet.SetPerson(loPerson)

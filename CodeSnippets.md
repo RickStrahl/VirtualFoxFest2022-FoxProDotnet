@@ -1,3 +1,15 @@
+### Initial Commands
+
+```ps
+dotnet --info
+dotnet --help
+```
+
+```ps
+dotnet new --list
+dotnet new classlib --help
+```
+
 ### Interop Project File
 
 ```xml
@@ -47,7 +59,12 @@ public decimal Add(decimal number1, decimal number2)
 
 public long Multiply(int number1, int number2)
 {
-    return (long)number1 * number2;
+    return (long) number1 * number2;
+}
+
+public static int Subtract(int number1, int number2)
+{
+    return number1 - number2;
 }
 ```
 
@@ -102,7 +119,7 @@ namespace FoxProInterop
 
     public class Address
     {
-        public static int IdCounter = 0;
+        private static int IdCounter = 0;   
 
         public int Id = ++IdCounter;
         

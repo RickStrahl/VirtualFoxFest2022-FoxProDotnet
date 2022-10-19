@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <Version>1.0.1</Version>
+	  <TargetFramework>net472</TargetFramework>
+	  <OutputPath>..\..\..\FoxPro\bin</OutputPath>
+      <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+	<!--<ItemGroup>
+    <PackageReference Include="markdig" 
+                      Version="0.30.4" />
+  </ItemGroup>-->
+
+</Project>

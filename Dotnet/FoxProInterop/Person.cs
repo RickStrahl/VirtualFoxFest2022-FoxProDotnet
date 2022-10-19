@@ -11,7 +11,7 @@ namespace FoxProInterop
 
             addr = new Address()
             {
-                Street = "111 Anywhere Lane",
+                Street = "111 Somewhere Lane",
                 City = "Doomsville",
                 PostalCode = "22222",
                 Type = AddressTypes.Shipping
@@ -27,10 +27,10 @@ namespace FoxProInterop
 
     public class Address
     {
-        public static int IdCounter = 0;
+        private static int IdCounter = 0;
 
         public int Id = ++IdCounter;
-
+        
         public string Street { get; set; } = "101 Nowhere Lane";
         public string City { get; set; } = "Paia";
         public string PostalCode { get; set; } = "11111";
@@ -43,5 +43,4 @@ namespace FoxProInterop
         Billing,
         Shipping
     }
-
 }

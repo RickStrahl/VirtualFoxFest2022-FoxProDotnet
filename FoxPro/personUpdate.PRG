@@ -13,14 +13,17 @@ loDotnet = loBridge.CreateInstance("FoxProInterop.Interop")
 
 *** Update an existing person
 loPerson = loDotnet.GetPerson()
+
 loPerson.Name = "Rick Strahl Updated"
+
+*!*	loAddresses = loBridge.GetProperty(loPerson,"Addresses")
+*!*	loAddress = loAddresses.Item(0)
 
 loAddress = loBridge.GetProperty(loPerson,"Addresses[0]")
 loAddress.City = "New City"
 
 *** Send the updated object to .NET
 loDotnet.SetPerson(loPerson)
-
 
 *** Now let's look at the DefaultPerson that was updated from what we passed
 ? loDotnet.DefaultPerson.Name

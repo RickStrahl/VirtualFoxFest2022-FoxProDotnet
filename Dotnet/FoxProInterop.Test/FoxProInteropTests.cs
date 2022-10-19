@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FoxProInterop;
 using System;
 
 namespace FoxProInterop.Test
@@ -10,7 +11,7 @@ namespace FoxProInterop.Test
         public void HelloWorldTest()
         {
             var inst = new Interop();
-            var result = inst.HelloWorld("risck");
+            var result = inst.HelloWorld("rick");
             
 
             Assert.IsNotNull(result);
@@ -18,5 +19,15 @@ namespace FoxProInterop.Test
             Assert.IsTrue(result.Contains("rick"), "Doesn't match name passed in.");
         }
 
+        [TestMethod]
+        public void MarkdownTest()
+        {
+            var markdown = "This is **Markdown**.";
+
+            var result = Markdown.ToHtml(markdown);
+
+            Assert.IsTrue(result.Contains("<strong>"), "markdown expansion failed.");
+            Console.WriteLine(result);
+        }
     }
 }

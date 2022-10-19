@@ -3,6 +3,29 @@ SET PROCEDURE TO MarkDownParser ADDITIVE
 
 * See FoxUnit: Tests\MarkdownParserTests.prg
 
+#IF .T.
+
+TEXT TO lcMarkdown NOSHOW
+This is some sample Markdown text. This text is **bold** and *italic*.
+
+* List Item 1
+* List Item 2
+* List Item 3
+
+Great it works!
+
+> ### ![](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Commons-emblem-legal.svg/45px-Commons-emblem-legal.svg.png) Examples are great
+> This is a block quote with a header
+ENDTEXT
+
+lcHtml = Markdown(lcMarkdown)
+? lcHtml
+
+lcHtml = Markdown(lcMarkdown)
+? lcHtml
+#ENDIF
+
+
 ************************************************************************
 *  Markdown
 ****************************************
@@ -138,7 +161,9 @@ IF llForce OR ISNULL(this.oPipeline)
 	loValue = loBridge.Createcomvalue()
 	loValue.SetEnum("Markdig.Extensions.AutoIdentifiers.AutoIdentifierOptions.GitHub")
 	loBridge.Invokestaticmethod("Markdig.MarkdownExtensions","UseAutoIdentifiers",loBuilder,loValue)
-	loBuilder = loBridge.Invokestaticmethod("Markdig.MarkdownExtensions","UseAutoLinks",loBuilder)
+
+	loOptions = loBridge.CreateInstance("Markdig.Extensions.AutoLinks.AutoLinkOptions")
+	loBuilder = loBridge.Invokestaticmethod("Markdig.MarkdownExtensions","UseAutoLinks",loBuilder,loOptions)
 	
 	loBuilder = loBridge.Invokestaticmethod("Markdig.MarkdownExtensions","UseYamlFrontMatter",loBuilder)
 	loBuilder = loBridge.Invokestaticmethod("Markdig.MarkdownExtensions","UseEmojiAndSmiley",loBuilder,.T.)
@@ -182,7 +207,7 @@ IF (llUtf8)
    lcMarkdown = STRCONV(lcMarkdown,9)
 ENDIF
 
-lcHtml = this.oBridge.InvokeStaticMethod("Markdig.Markdown","ToHtml",lcMarkdown, loPipeline)
+lcHtml = this.oBridge.InvokeStaticMethod("Markdig.Markdown","ToHtml",lcMarkdown,loPipeline,null)
 
 IF llUtf8
   SYS(3101,lnOldCodePage)  

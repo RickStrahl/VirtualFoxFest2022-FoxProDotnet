@@ -18,7 +18,7 @@ lcSecret = "seekrit10!"
 ***       it's often useful to use a Customer ID as salt
 lcSecretSalt = "#@Sek|+!223"
 
-? "Encryption with explicit key:"
+? "Encryption with explicit key"
 lcOriginal = "A very approachable string with upper ASCII chars: ƒ¢ªÑº!"
 lcOriginal2 = "Saksdj asdklajs dlaksjd aslkdj alksdjalkd jalskdj asdjasld kalksdjlaksjdkljasd"
 
@@ -30,7 +30,7 @@ lcDecrypted =  o.Decryptstring(lcEncrypted,lcSecret)
 ? lcDecrypted
 
 ?
-? "Encryption using globally assigned key:"
+? "Encryption using globally assigned key"
 o.SetEncryptionKey(lcSecret + "_explicit")
 ? lcOriginal
 lcEncrypted =  o.Encryptstring(lcOriginal) && no key
@@ -38,6 +38,7 @@ lcEncrypted =  o.Encryptstring(lcOriginal) && no key
 lcDecrypted =  o.Decryptstring(lcEncrypted) && no key
 ? lcDecrypted
 
+RETURN
 
 ?
 ? "Hash using no Salt:"
@@ -148,8 +149,6 @@ FUNCTION EncryptString(lcInput, lcEncryptionKey, llUseBinHex, ;
                        lcEncryptionKeyHashAlgo, lcEncryptionKeyHashSalt,;
                        lcIvKey)
 LOCAL lcError, lcResult
-
-SET STEP ON 
 
 IF EMPTY(lcEncryptionKey)
   lcEncryptionKey = null

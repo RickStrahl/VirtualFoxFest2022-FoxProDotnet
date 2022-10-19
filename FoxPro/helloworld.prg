@@ -1,11 +1,9 @@
 CLEAR
 DO setEnv
-? SET("PATH")
 
 do wwDotNetBridge
 LOCAL loBridge as wwDotNetBridge
 loBridge = GetwwDotnetBridge()
-
 
 ? loBridge.LoadAssembly("FoxProInterop.dll")  
 ? loBridge.cErrorMsg

@@ -1,9 +1,9 @@
 {
   "profiles": {
-    "FoxProInterop Debugging": {
+    "FoxProInterop": {
       "commandName": "Executable",
-      "executablePath": "c:\\programs\\vfp9\\vfp9.exe",
-      "workingDirectory": "C:\\wwapps\\Conf\\FoxProDotNet\\FoxPro"
+      "executablePath": "c:/programs/vfp9/vfp9.exe",
+      "workingDirectory": "..\\..\\FoxPro"
     }
   }
 }
