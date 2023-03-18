@@ -1,12 +1,12 @@
 # Visual FoxFest Session: Revisiting  modern .NET for the FoxPro Interop Developer
 
-<small>*prepared for Virtual FoxFest 2022*</small>
+<small>*prepared for [Virtual FoxFest 2022](https://virtualfoxfest.com/2022October/Sessions.aspx)*</small>
 
 This is the session repository that provides access to:
 
 * [Session White Paper PDF](Documents/Strahl_FoxProDotnet.pdf) ([html](Documents/Markdown/FoxProDotnet.md))
 * [Session Slides](Documents/Strahl_FoxProDotNet.pptx)
-* YouTube Session <small>*(not published yet)*</small>
+* [YouTube Session](https://www.youtube.com/watch?v=RrMe1KwSnF4)
 * .NET and FoxPro Examples
    * [FoxPro](./FoxPro)
    * [.NET](./DotNet)
